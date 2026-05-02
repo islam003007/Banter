@@ -1,0 +1,14 @@
+services:
+  api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTP_PORTS=8080
+    ports:
+      - "8080"
+  db:
+    ports:
+      - "127.0.0.1:5432:5432" # Desktop PGAdmin connects to localhost:5432
+
+  cache:
+    ports:
+      - "127.0.0.1:6379:6379" # Desktop Redis Insight connects to localhost:6379

@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Banter.API/Banter.API.csproj" />
+    <Project Path="Banter.Application/Banter.Application.csproj" Id="39c3500c-e3ca-4ed8-b9fe-7ff5941c0ae5" />
+    <Project Path="Banter.Domain/Banter.Domain.csproj" Id="2329a671-af6b-4dbe-af20-ef523637930a" />
+    <Project Path="Banter.Infrastructure/Banter.Infrastructure.csproj" Id="892d084c-66a4-4803-be0d-9a8cbfb567bf" />
+    <Project Path="Banter.SharedKernel/Banter.SharedKernel.csproj" Id="a49fa48f-580f-411c-a008-9a24b52b1d6b" />
+  </Folder>
+  <Folder Name="/tests/" />
+  <Project Path="docker-compose.dcproj">
+    <Build />
+  </Project>
+</Solution>

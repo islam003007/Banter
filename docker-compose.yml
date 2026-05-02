@@ -1,0 +1,26 @@
+services:
+  api:
+    image: ${DOCKER_REGISTRY-}banterapi
+    build:
+      context: .
+      dockerfile: Banter.API/Dockerfile
+
+  db:
+    image: postgres:${POSTGRES_VERSION}
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  cache:
+    image: redis:${REDIS_VERSION}
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    volumes:
+      - redis_data:/data
+
+volumes:
+  db_data:
+  redis_data:
+

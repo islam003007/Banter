@@ -1,0 +1,26 @@
+# .NET Specific
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docuser
+.vs/
+.idea/
+.vscode/
+**/secrets.json
+/appsettings.Development.json
+
+# Docker / Environment
+.env
+.env.local
+
+
+# Database / Storage
+.db_data/
+.redis_data/
+*.mdf
+*.ldf
+*.db
+
+# Logs
+*.log
