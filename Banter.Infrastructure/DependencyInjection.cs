@@ -1,5 +1,6 @@
 ﻿using Banter.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Hybrid;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -18,6 +19,15 @@ internal static class DependencyInjection
         {
             options.Configuration = configuration.GetConnectionString("Redis");
             options.InstanceName = "Banter_";
+        });
+
+        services.AddHybridCache(options => 
+        {
+            options.DefaultEntryOptions = new HybridCacheEntryOptions()
+            {
+                LocalCacheExpiration = TimeSpan.FromMinutes(2),
+                Expiration = TimeSpan.FromMinutes(5) 
+            };
         });
 
         return services;

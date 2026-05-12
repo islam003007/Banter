@@ -40,12 +40,7 @@ internal class SendMessageCommandHandler(IAppDbContext _context, IUserContext _u
         }
 
 
-        var message = new Message()
-        {
-            UserId = userId,
-            ConversationId = request.ConversationId,
-            Content = request.Content
-        };
+        var message = new Message(request.ConversationId, userId, request.Content);
 
         _context.Messages.Add(message);
 

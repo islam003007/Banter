@@ -12,7 +12,7 @@ internal class AppDbContext : IdentityDbContext<User, Role, Guid>, IAppDbContext
 {
     public DbSet<Conversation> Conversations => Set<Conversation>();
     public DbSet<Message> Messages => Set<Message>();
-    public DbSet<ConversationParticipant> ConversationParticipants => Set<ConversationParticipant>();
+    public IQueryable<ConversationParticipant> ConversationParticipants => Set<ConversationParticipant>().AsNoTracking();
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
 

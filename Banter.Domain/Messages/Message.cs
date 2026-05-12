@@ -2,10 +2,22 @@
 
 public class Message : BaseEntity, IAggregateRoot
 {
-    public Guid ConversationId { get; set; }
-    public Guid UserId { get; set; }
-    public string Content { get; set; } = null!;
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-    public bool IsEdited { get; set; } = false;
-    public DateTime? EditedAt { get; set; }
+    public Guid ConversationId { get; private set; }
+    public Guid UserId { get; private set; }
+    public string Content { get; private set; } = null!;
+    public DateTime CreatedAt { get; } = DateTime.UtcNow;
+    public bool IsEdited { get; private set; } = false;
+    public DateTime? EditedAt { get; private set; }
+
+    private Message()
+    {
+
+    }
+
+    public Message(Guid conversationId, Guid userId, string content)
+    {
+        ConversationId = conversationId;
+        UserId = userId;
+        Content = content;
+    }
 }
