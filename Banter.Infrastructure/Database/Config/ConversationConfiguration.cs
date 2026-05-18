@@ -1,5 +1,5 @@
-﻿using Banter.Domain.Conversations;
-using Banter.Domain.Users;
+﻿using Banter.Domain.Constants;
+using Banter.Domain.Conversations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,14 +10,14 @@ internal class ConversationConfiguration : IEntityTypeConfiguration<Conversation
     public void Configure(EntityTypeBuilder<Conversation> builder)
     {
 
-        builder.Property(x => x.Title)
-            .HasMaxLength(200);
+        builder.Property(c => c.Title).HasMaxLength(ConversationConstants.TitleMaxLength);
 
         builder.Property(x => x.CreatedAt)
             .IsRequired();
 
         builder.HasMany(x => x.Participants)
-            .WithOne()
-            .OnDelete(DeleteBehavior.Cascade);
+            .WithOne(x => x.Conversation)
+            .HasForeignKey(x => x.ConversationId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

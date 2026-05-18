@@ -5,8 +5,8 @@ namespace Banter.Infrastructure.Services.Realtime;
 
 internal class NotificationService(IHubContext<ChatHub, IChatClient> _hubcontext) : INotificationService
 {
-    public Task BroadcastMessageAsync(MessageNotification message, Guid ConversationId)
+    public Task SendMessageAsync(MessageNotification message, IReadOnlyList<string> userIds)
     {
-        throw new NotImplementedException();
+        return _hubcontext.Clients.Users(userIds).ReceiveMessage(message);
     }
 }

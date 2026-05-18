@@ -2,9 +2,19 @@
 
 public class ConversationParticipant // composite key so not a base intity
 {
-    public Guid UserId { get; set; }
-    public Guid ConversationId { get; set; }
-    public DateTime JoinedAt { get; set; } = DateTime.UtcNow;
-    public Guid? LastMessageId { get; set; }
-    public Conversation Conversation { get; set; } = null!;
+    public Guid UserId { get; private set; }
+    public Guid ConversationId { get; private set; }
+    public DateTime JoinedAt { get; } = DateTime.UtcNow;
+    public Guid? LastSeenMessageId { get; set; }
+    public Conversation Conversation { get; private set; } = null!;
+
+    private ConversationParticipant()
+    {
+
+    }
+
+    public ConversationParticipant(Guid userId)
+    {
+        UserId = userId;
+    }
 }

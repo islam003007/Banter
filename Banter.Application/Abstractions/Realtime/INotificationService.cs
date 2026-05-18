@@ -2,7 +2,5 @@
 
 public interface INotificationService
 {
-    Task BroadcastMessageAsync(MessageNotification message, Guid ConversationId);
+    public Task SendMessageAsync(MessageNotification message, IReadOnlyList<string> userIds);
 }
-
-public record MessageNotification(Guid Id, string Content, Guid UserId, DateTime CreatedAt);

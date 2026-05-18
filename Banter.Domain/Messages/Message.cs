@@ -1,11 +1,11 @@
 ﻿namespace Banter.Domain.Messages;
 
-public class Message : BaseEntity, IAggregateRoot
+public class Message : BaseEntity
 {
     public Guid ConversationId { get; private set; }
     public Guid UserId { get; private set; }
     public string Content { get; private set; } = null!;
-    public DateTime CreatedAt { get; } = DateTime.UtcNow;
+    public DateTime CreatedAt { get; private init; } = DateTime.UtcNow;
     public bool IsEdited { get; private set; } = false;
     public DateTime? EditedAt { get; private set; }
 

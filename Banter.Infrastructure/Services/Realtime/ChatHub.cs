@@ -13,7 +13,7 @@ public class ChatHub(IPresenceService _presenceService) : Hub<IChatClient>
 
         if (userId != null)
         {
-            await _presenceService.SetOnlineAsync(userId);
+            await _presenceService.SetOnlineAsync(Guid.Parse(userId));
         }
 
         await base.OnConnectedAsync();
@@ -25,7 +25,7 @@ public class ChatHub(IPresenceService _presenceService) : Hub<IChatClient>
 
         if (userId != null)
         {
-            await _presenceService.SetOfflineAsync(userId);
+            await _presenceService.SetOfflineAsync(Guid.Parse(userId));
         }
 
         await base.OnDisconnectedAsync(exception);
@@ -37,7 +37,7 @@ public class ChatHub(IPresenceService _presenceService) : Hub<IChatClient>
 
         if (userId != null)
         {
-            await _presenceService.SetOnlineAsync(userId);
+            await _presenceService.SetOnlineAsync(Guid.Parse(userId));
         }
     }
 }

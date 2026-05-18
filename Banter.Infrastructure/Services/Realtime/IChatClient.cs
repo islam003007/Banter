@@ -4,5 +4,5 @@ namespace Banter.Infrastructure.Services.Realtime;
 
 public interface IChatClient
 {
-    Task ReeiveMessage(MessageNotification message);
+    Task ReceiveMessage(MessageNotification message);
 }

@@ -1,14 +1,15 @@
 ﻿using Banter.Application.Abstractions;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Messaging;
+using Banter.Application.Constants;
 using Banter.Application.Extensions;
 using Banter.SharedKernel;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace Banter.Application.Users;
+namespace Banter.Application.Features.Users;
 
-internal record SearchUsersQuery(string SearchTerm, int PageSize, int PageNumber) : IQuery<IReadOnlyList<SearchUsersResponse>>, IPagedQuery;
+internal record SearchUsersQuery(string SearchTerm, int PageSize, int PageNumber) : IQuery<IReadOnlyList<SearchUsersResponse>>;
 
 internal class SearchUsersQueryValidator : AbstractValidator<SearchUsersQuery>
 {
@@ -17,8 +18,11 @@ internal class SearchUsersQueryValidator : AbstractValidator<SearchUsersQuery>
         RuleFor(x => x.SearchTerm)
             .NotEmpty();
 
-        RuleFor(x => x)
-            .HasValidPagination();
+        RuleFor(x => x.PageSize)
+            .InclusiveBetween(1, PaginationConstants.MaxPageSize);
+
+        RuleFor(x => x.PageNumber)
+            .GreaterThanOrEqualTo(1);
     }
 }
 
@@ -29,13 +33,10 @@ internal class SearchUsersHandler(IAppDbContext _dbContext, IPresenceService pre
 {
     public async Task<Result<IReadOnlyList<SearchUsersResponse>>> Handle(SearchUsersQuery request, CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(request.SearchTerm))
-            return new List<SearchUsersResponse>(); // implement the validator
 
         var users = await _dbContext.Users
             .AsNoTracking()
             .Where(u => u.DisplayName.Contains(request.SearchTerm) || u.Email!.Contains(request.SearchTerm))
-            .Take(20)
             .Select(x => new
             {
                 x.Id,
@@ -43,6 +44,8 @@ internal class SearchUsersHandler(IAppDbContext _dbContext, IPresenceService pre
                 x.ProfilePictureUrl,
                 x.Email
             })
+            .Skip(request.PageSize * (request.PageNumber - 1))
+            .Take(request.PageSize)
             .ToListAsync(cancellationToken);
 
         var usersIsOnline = await Task.WhenAll(users.Select(x => presenceService.IsOnlineAsync(x.Id, cancellationToken)));

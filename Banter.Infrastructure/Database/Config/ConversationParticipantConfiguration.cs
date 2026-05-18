@@ -24,7 +24,7 @@ internal class ConversationParticipantConfiguration : IEntityTypeConfiguration<C
 
         builder.HasOne<Message>()
             .WithMany()
-            .HasForeignKey(x => x.LastMessageId)
+            .HasForeignKey(x => x.LastSeenMessageId)
             .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -2,7 +2,7 @@
 
 public interface IPresenceService
 {
-    Task SetOnlineAsync(string userId);
-    Task SetOfflineAsync(string userId);
-    Task<bool> IsOnlineAsync(string userId, CancellationToken cancellationToken);
+    Task SetOnlineAsync(Guid userId);
+    Task SetOfflineAsync(Guid userId);
+    Task<bool> IsOnlineAsync(Guid userId, CancellationToken cancellationToken);
 }

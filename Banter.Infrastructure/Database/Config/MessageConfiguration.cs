@@ -24,6 +24,7 @@ internal class MessageConfiguration : IEntityTypeConfiguration<Message>
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasIndex(x => new { x.ConversationId, x.CreatedAt });
+        builder.HasIndex(x => new { x.ConversationId, x.CreatedAt, x.Id })
+            .IsDescending(false, true, true);
     }
 }
