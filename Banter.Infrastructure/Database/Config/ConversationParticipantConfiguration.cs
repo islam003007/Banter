@@ -12,12 +12,7 @@ internal class ConversationParticipantConfiguration : IEntityTypeConfiguration<C
     {
         builder.HasKey(x => new { x.ConversationId, x.UserId });
 
-        builder.HasOne(x => x.Conversation)
-            .WithMany(x => x.Participants)
-            .HasForeignKey(x => x.ConversationId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne<User>()
+        builder.HasOne<User>(x => x.User)
             .WithMany()
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Restrict);

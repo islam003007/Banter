@@ -1,4 +1,6 @@
-﻿namespace Banter.Domain.Conversations;
+﻿using Banter.Domain.Users;
+
+namespace Banter.Domain.Conversations;
 
 public class ConversationParticipant // composite key so not a base intity
 {
@@ -7,6 +9,8 @@ public class ConversationParticipant // composite key so not a base intity
     public DateTime JoinedAt { get; } = DateTime.UtcNow;
     public Guid? LastSeenMessageId { get; set; }
     public Conversation Conversation { get; private set; } = null!;
+
+    public User User { get; private set; } = null!;
 
     private ConversationParticipant()
     {

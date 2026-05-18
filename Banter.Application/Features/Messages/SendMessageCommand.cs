@@ -10,7 +10,7 @@ using Banter.SharedKernel;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace Banter.Application.Conversations;
+namespace Banter.Application.Features.Messages;
 
 public record SendMessageCommand(Guid ConversationId, string Content) : ICommand<Guid>;
 

@@ -95,19 +95,6 @@ internal class GetMessagesQueryHandler(IAppDbContext _dbContext, IUserContext _u
             PageCursor.Encode(lastMessage.CreatedAt, lastMessage.Id)
             : null;
 
-        // Updating the last seen message
-        if (request.Cursor is null)
-        {
-            var newLastSeenMessage = messages.FirstOrDefault();
-
-            if (newLastSeenMessage is not null)
-            {
-                await _dbContext.ConversationParticipants
-                    .Where(p => p.UserId == userId && p.ConversationId == request.ConversationId)
-                    .ExecuteUpdateAsync(setters => setters.SetProperty(p => p.LastSeenMessageId, newLastSeenMessage.Id), cancellationToken);
-            }
-        }
-
         var lastSeenMessageId = participant.LastSeenMessageId;
 
         return new GetMessagesResponse(messages, nextCursor, hasMore, lastSeenMessageId);

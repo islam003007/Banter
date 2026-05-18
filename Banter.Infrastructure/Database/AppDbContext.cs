@@ -13,7 +13,7 @@ internal class AppDbContext : IdentityDbContext<User, Role, Guid>, IAppDbContext
 {
     public DbSet<Conversation> Conversations => Set<Conversation>();
     public DbSet<Message> Messages => Set<Message>();
-    public IQueryable<ConversationParticipant> ConversationParticipants => Set<ConversationParticipant>().AsNoTracking();
+    public DbSet<ConversationParticipant> ConversationParticipants => Set<ConversationParticipant>();
     public Task<IDbContextTransaction> BeginTransactionAsync() => Database.BeginTransactionAsync();
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {

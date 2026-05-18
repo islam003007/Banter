@@ -11,7 +11,7 @@ public interface IAppDbContext
 {
     DbSet<User> Users { get; }
     DbSet<Conversation> Conversations { get; }
-    IQueryable<ConversationParticipant> ConversationParticipants { get; }
+    DbSet<ConversationParticipant> ConversationParticipants { get; }
     DbSet<Message> Messages { get; }
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     EntityEntry<TEntity> Attach<TEntity>(TEntity entity) where TEntity : class;

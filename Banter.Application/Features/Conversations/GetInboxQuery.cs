@@ -2,14 +2,14 @@
 using Banter.Application.Abstractions.Auth;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Messaging;
-using Banter.Application.Common;
 using Banter.Application.Constants;
 using Banter.Application.Errors;
+using Banter.Application.Features.Common;
 using Banter.SharedKernel;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
-namespace Banter.Application.Conversations;
+namespace Banter.Application.Features.Conversations;
 
 public record GetInboxResponse(IReadOnlyList<GetInboxResponse.ConversationResponse> Conversations,
     string? Nextcursor,

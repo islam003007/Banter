@@ -35,7 +35,6 @@ internal class SearchUsersHandler(IAppDbContext _dbContext, IPresenceService pre
     {
 
         var users = await _dbContext.Users
-            .AsNoTracking()
             .Where(u => u.DisplayName.Contains(request.SearchTerm) || u.Email!.Contains(request.SearchTerm))
             .Select(x => new
             {
