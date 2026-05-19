@@ -3,6 +3,7 @@ using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Messaging;
 using Banter.Application.Constants;
 using Banter.Application.Errors;
+using Banter.Application.Extensions;
 using Banter.Application.Features.Common;
 using Banter.Domain.Conversations;
 using Banter.SharedKernel;
@@ -81,19 +82,9 @@ internal class GetMessagesQueryHandler(IAppDbContext _dbContext, IUserContext _u
             .Take(request.PageSize + 1)
             .ToListAsync(cancellationToken);
 
-        // Updating the cursor
-        var hasMore = messages.Count > request.PageSize;
+        var hasMore = PaginationHelpers.Slice(messages, request.PageSize);
 
-        if (hasMore)
-        {
-            messages.RemoveAt(messages.Count - 1);
-        }
-
-        var lastMessage = messages.LastOrDefault();
-
-        var nextCursor = hasMore && lastMessage is not null ?
-            PageCursor.Encode(lastMessage.CreatedAt, lastMessage.Id)
-            : null;
+        var nextCursor = PaginationHelpers.CreateNextCursor(messages, hasMore, x => x.CreatedAt, x => x.Id);
 
         var lastSeenMessageId = participant.LastSeenMessageId;
 

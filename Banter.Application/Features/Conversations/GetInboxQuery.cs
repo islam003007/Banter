@@ -4,6 +4,7 @@ using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Messaging;
 using Banter.Application.Constants;
 using Banter.Application.Errors;
+using Banter.Application.Extensions;
 using Banter.Application.Features.Common;
 using Banter.SharedKernel;
 using FluentValidation;
@@ -32,6 +33,9 @@ internal class GetInboxQueryValidator : AbstractValidator<GetInboxQuery>
     {
         RuleFor(x => x.PageSize)
              .InclusiveBetween(1, PaginationConstants.MaxPageSize);
+
+        RuleFor(x => x.Cursor)
+            .Must(x => x is null || !string.IsNullOrWhiteSpace(x)).WithMessage("Cursor must either be null or non-empty");
     }
 }
 
@@ -62,7 +66,7 @@ internal class GetInboxHandler(IAppDbContext _dbContext, IUserContext _userConte
             where decodedCursor == null
                || lm.CreatedAt < decodedCursor.CreatedAt
                || (lm.CreatedAt == decodedCursor.CreatedAt && lm.Id < decodedCursor.Id)
-            orderby lm.CreatedAt descending, c.Id descending
+            orderby lm.CreatedAt descending, lm.Id descending
             select new
             {
                 ConversationId = c.Id,
@@ -78,20 +82,11 @@ internal class GetInboxHandler(IAppDbContext _dbContext, IUserContext _userConte
                 .Take(request.PageSize + 1)
                 .ToListAsync(cancellationToken);
 
-        var hasMore = conversations.Count > request.PageSize;
+        var hasMore= PaginationHelpers.Slice(conversations, request.PageSize);
 
-        if (hasMore)
-        {
-            conversations.RemoveAt(conversations.Count - 1);
-        }
+        var nextCursor = PaginationHelpers.CreateNextCursor(conversations, hasMore, x => x.CreatedAt,x => x.Id);
 
         var conversationIds = conversations.Select(c => c.ConversationId).ToList();
-
-        var lastConversation = conversations.LastOrDefault();
-
-        var nextCursor = hasMore && lastConversation is not null ?
-            PageCursor.Encode(lastConversation.CreatedAt, lastConversation.Id)
-            : null;
 
         var participantsQuery =
             from p in _dbContext.ConversationParticipants
