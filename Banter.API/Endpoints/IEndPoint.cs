@@ -9,5 +9,7 @@ internal interface IEndpoint
 
 internal enum Feature
 {
-    Conversations
+    Conversations,
+    Messages,
+    Users
 }

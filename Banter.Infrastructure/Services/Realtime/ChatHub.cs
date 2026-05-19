@@ -19,18 +19,6 @@ public class ChatHub(IPresenceService _presenceService) : Hub<IChatClient>
         await base.OnConnectedAsync();
     }
 
-    public override async Task OnDisconnectedAsync(Exception? exception)
-    {
-        var userId = Context.UserIdentifier;
-
-        if (userId != null)
-        {
-            await _presenceService.SetOfflineAsync(Guid.Parse(userId));
-        }
-
-        await base.OnDisconnectedAsync(exception);
-    }
-
     public async Task Heartbeat()
     {
         var userId = Context.UserIdentifier;
