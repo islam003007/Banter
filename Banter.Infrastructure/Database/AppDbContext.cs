@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Banter.Infrastructure.Database;
 
-internal class AppDbContext : IdentityDbContext<User, Role, Guid>, IAppDbContext
+public class AppDbContext : IdentityDbContext<User, Role, Guid>, IAppDbContext
 {
     public DbSet<Conversation> Conversations => Set<Conversation>();
     public DbSet<Message> Messages => Set<Message>();

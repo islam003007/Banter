@@ -25,7 +25,7 @@ public record GetInboxResponse(IReadOnlyList<GetInboxResponse.ConversationRespon
     bool IsOnline);
 }
 
-internal record GetInboxQuery(string? Cursor, int PageSize) : IQuery<GetInboxResponse>;
+public record GetInboxQuery(string? Cursor, int PageSize) : IQuery<GetInboxResponse>;
 
 internal class GetInboxQueryValidator : AbstractValidator<GetInboxQuery>
 {

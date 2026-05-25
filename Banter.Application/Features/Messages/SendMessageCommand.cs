@@ -27,7 +27,7 @@ internal class SendMessageCommandValidator : AbstractValidator<SendMessageComman
     }
 }
 
-internal class SendMessageCommandHandler(IAppDbContext _dbContext, IUserContext _userContext, INotificationService _notificationService)
+internal class SendMessageCommandHandler(IAppDbContext _dbContext, IUserContext _userContext, ISignalRNotifier _notificationService)
     : ICommandHandler<SendMessageCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(SendMessageCommand request, CancellationToken cancellationToken)

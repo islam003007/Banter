@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Banter.Application.Features.Conversations;
 
-public record CreateConversationCommand(List<Guid> ParticipantIds, string? GroupTitle = null) : ICommand<Guid>;
+public record CreateConversationCommand(IReadOnlyList<Guid> ParticipantIds, string? GroupTitle = null) : ICommand<Guid>;
 
 internal class CreateConversationCommandValidator : AbstractValidator<CreateConversationCommand>
 {

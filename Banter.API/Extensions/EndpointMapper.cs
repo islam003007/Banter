@@ -9,18 +9,20 @@ internal static class EndPointMapper
     {
         using (var scope = app.ServiceProvider.CreateScope())
         {
+            var api = app.MapGroup("/api/v1"); // TODO: Upgrade to api versioning if needed.
+
             var endpoints = scope.ServiceProvider.GetServices<IEndpoint>();
 
             foreach (var featureGroup in endpoints.GroupBy(e => e.Feature))
             {
                 string featureName = featureGroup.Key.ToString().ToLower();
 
-                var standardGroup = app.MapGroup("")
-                                       .WithTags(featureName);
+                var standardGroup = api.MapGroup("")
+                    .WithTags(featureName);
 
-                var adminGroup = app.MapGroup("")
-                                    .WithTags($"admin: {featureName}")
-                                    .RequireAuthorization(Policies.AdminOnly); // extra check for safety
+                var adminGroup = api.MapGroup("/admin")
+                    .WithTags($"admin: {featureName}")
+                    .RequireAuthorization(Policies.AdminOnly); // extra check for safety
 
                 foreach (var endpoint in featureGroup)
                 {

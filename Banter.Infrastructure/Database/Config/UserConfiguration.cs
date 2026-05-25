@@ -1,4 +1,5 @@
-﻿using Banter.Domain.Users;
+﻿using Banter.Domain.Constants;
+using Banter.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -8,13 +9,11 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
 {
     public void Configure(EntityTypeBuilder<User> builder)
     {
-        builder.Property(x => x.UserName)
-            .IsRequired()
-            .HasMaxLength(100);
+        builder.Property(x => x.DisplayName)
+            .HasMaxLength(UserConstants.DisplayNameMaxLength);
 
-        builder.Property(x => x.Email)
-            .IsRequired()
-            .HasMaxLength(200);
+        builder.Property(x => x.ProfilePictureUrl)
+            .HasMaxLength(UserConstants.ProfilePictureUrlMaxLength);
 
         builder.HasIndex(x => x.Email)
             .IsUnique();

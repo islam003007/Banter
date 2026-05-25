@@ -13,9 +13,11 @@ public class User : IdentityUser<Guid>
 
     }
 
-    public User(string displayName, string? profilePictureUrl)
+    public User(string email, string displayName, string? profilePictureUrl)
     {
         DisplayName = displayName;
         ProfilePictureUrl = profilePictureUrl;
+        Email = email;
+        UserName = email;
     }
 }

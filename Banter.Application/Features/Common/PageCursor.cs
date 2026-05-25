@@ -39,47 +39,4 @@ internal class PageCursor
             return null;
         }
     }
-
-    public static IQueryable<T> ApplyCursor<T>(
-        this IQueryable<T> query,
-        PageCursor? cursor)
-        where T : ICursorPageItem
-    {
-        if (cursor is null)
-            return query;
-
-        return query.Where(x =>
-            x.CreatedAt < cursor.CreatedAt
-            || (x.CreatedAt == cursor.CreatedAt && x.Id < cursor.Id));
-    }
-
-    public static async Task<CursorPage<T>> ToCursorPageAsync<T>(
-        this IQueryable<T> query,
-        int pageSize,
-        CancellationToken cancellationToken = default)
-        where T : ICursorPageItem
-    {
-        var items = await query
-            .Take(pageSize + 1)
-            .ToListAsync(cancellationToken);
-
-        var hasMore = items.Count > pageSize;
-
-        if (hasMore)
-        {
-            items.RemoveAt(items.Count - 1);
-        }
-
-        var lastItem = items.LastOrDefault();
-
-        var nextCursor =
-            hasMore && lastItem is not null
-                ? PageCursor.Encode(lastItem.CreatedAt, lastItem.Id)
-                : null;
-
-        return new CursorPage<T>(
-            items,
-            nextCursor,
-            hasMore);
-    }
 }

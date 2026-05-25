@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Banter.Application.Features.Users;
 
-internal record SearchUsersQuery(string SearchTerm, string? Cursor, int PageSize) : IQuery<SearchUsersResponse>;
+public record SearchUsersQuery(string SearchTerm, string? Cursor, int PageSize) : IQuery<SearchUsersResponse>;
 
 internal class SearchUsersQueryValidator : AbstractValidator<SearchUsersQuery>
 {

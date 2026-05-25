@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Banter.Infrastructure.Services.Realtime;
 
-internal class NotificationService(IHubContext<ChatHub, IChatClient> _hubcontext) : INotificationService
+internal class SignalRNotifier(IHubContext<ChatHub, IChatClient> _hubcontext) : ISignalRNotifier
 {
     public Task SendMessageAsync(MessageNotification message, IReadOnlyList<string> userIds)
     {
