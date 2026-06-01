@@ -14,8 +14,5 @@ internal class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(x => x.ProfilePictureUrl)
             .HasMaxLength(UserConstants.ProfilePictureUrlMaxLength);
-
-        builder.HasIndex(x => x.Email)
-            .IsUnique();
     }
 }

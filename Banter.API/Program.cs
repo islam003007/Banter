@@ -2,7 +2,9 @@ using Banter.API;
 using Banter.API.Extensions;
 using Banter.Application;
 using Banter.Infrastructure;
+using Banter.Infrastructure.Services;
 using Banter.Infrastructure.Services.Realtime;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,17 +12,22 @@ builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddInfrastructure(builder.Configuration);
 builder.Services.AddApi(builder.Configuration);
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
     c.CustomSchemaIds(type => type.FullName!.Replace("+", "."));
 });
 
+builder.Host.UseSerilog((context, services, logger) =>
+{
+    logger.ReadFrom.Configuration(context.Configuration);
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+await SeederRunner.ApplyMigrations(app.Services);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -30,6 +37,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCustomRequestLogging();
 app.UseExceptionHandler();
 app.UseAuthentication();
 app.UseAuthorization();

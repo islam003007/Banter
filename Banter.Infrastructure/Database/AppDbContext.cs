@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Banter.Domain;
 using Banter.Application.Abstractions.Data;
 using Microsoft.EntityFrameworkCore.Storage;
+using Banter.Infrastructure.Database.Config;
 
 namespace Banter.Infrastructure.Database;
 
@@ -23,6 +24,7 @@ public class AppDbContext : IdentityDbContext<User, Role, Guid>, IAppDbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.ConfigureIdentity();
         modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
     }
 }

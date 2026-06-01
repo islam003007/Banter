@@ -19,8 +19,23 @@ services:
     command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
     volumes:
       - redis_data:/data
+    
+  seq:
+    image: datalust/seq:${SEQ_VERSION}
+    restart: unless-stopped
+
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_ADMINPASSWORD: ${SEQ_ADMIN_PASSWORD}
+
+    ports:
+      - "127.0.0.1:${SEQ_PORT}:80"
+
+    volumes:
+      - seq-data:/data
 
 volumes:
   db_data:
   redis_data:
+  seq-data:
 

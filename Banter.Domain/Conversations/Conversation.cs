@@ -1,12 +1,10 @@
-﻿using System.Runtime.CompilerServices;
-
-namespace Banter.Domain.Conversations;
+﻿namespace Banter.Domain.Conversations;
 
 public class Conversation : BaseEntity
 {
-    public string? Title { get; private set;}
+    public string? Title { get; private init;}
     public DateTime CreatedAt { get; private init; } = DateTime.UtcNow;
-    public bool IsGroup { get; private set; } = false;
+    public bool IsGroup { get; private init; } = false;
     public Guid? LastMessageId { get; set; }
     public ICollection<ConversationParticipant> Participants { get; private set; } = new List<ConversationParticipant>();
     private Conversation()

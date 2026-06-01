@@ -7,6 +7,8 @@ using Banter.Domain.Users;
 using Banter.Infrastructure.Database;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Serilog.Extensions.Hosting;
+using System.Diagnostics;
 
 namespace Banter.API;
 
@@ -73,7 +75,8 @@ public static class DependencyInjection
         {
             configure.CustomizeProblemDetails = context =>
             {
-                context.ProblemDetails.Extensions.TryAdd("requestId", context.HttpContext.TraceIdentifier);
+                context.ProblemDetails.Extensions.TryAdd("RequestId", context.HttpContext.TraceIdentifier);
+                context.ProblemDetails.Extensions.TryAdd("TraceId", Activity.Current?.TraceId);
             };
         });
 

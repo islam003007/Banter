@@ -1,6 +1,5 @@
 ﻿using Banter.Domain.Conversations;
 using Banter.Domain.Messages;
-using Banter.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -12,7 +11,7 @@ internal class ConversationParticipantConfiguration : IEntityTypeConfiguration<C
     {
         builder.HasKey(x => new { x.ConversationId, x.UserId });
 
-        builder.HasOne<User>(x => x.User)
+        builder.HasOne(x => x.User)
             .WithMany()
             .HasForeignKey(x => x.UserId)
             .OnDelete(DeleteBehavior.Restrict);
