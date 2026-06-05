@@ -71,3 +71,7 @@ docker compose up -d
 | Seq           | http://localhost:5431
 
 
+## Third-Party Libraries
+
+This project uses MediatR, which requires a commercial license for production use.
+This repository is intended for educational and portfolio purposes only.
