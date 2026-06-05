@@ -1,0 +1,65 @@
+﻿[
+  {
+    "conversationId": "019e8b9e-bad4-7ec3-97f5-4a36516cf5ea",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "lastSeenMessageId": "019e8bb0-1ac7-7ecd-a793-aef4f1e51db0"
+  },
+  {
+    "conversationId": "019e8b9e-bad4-7ec3-97f5-4a36516cf5ea",
+    "userId": "019e8b9d-dde6-7bd2-99a5-1258d2c14ccb",
+    "lastSeenMessageId": "019e8bb0-4b40-773e-b1a8-62529bff780f"
+  },
+
+  {
+    "conversationId": "019e8b9f-4ec1-7e38-a37a-5c05911c4fc9",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "lastSeenMessageId": "019e8bb0-809d-7af0-bb46-d1da45e16fbb"
+  },
+  {
+    "conversationId": "019e8b9f-4ec1-7e38-a37a-5c05911c4fc9",
+    "userId": "019e8b9e-0e79-7e7e-9cc9-df4afcb7c51f",
+    "lastSeenMessageId": "019e8bb0-809d-7af0-bb46-d1da45e16fbb"
+  },
+
+  {
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "lastSeenMessageId": "019e8bb0-f95f-7a13-9cb8-401f626a7bfc"
+  },
+  {
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9d-dde6-7bd2-99a5-1258d2c14ccb",
+    "lastSeenMessageId": "019e8bb0-f95f-7a13-9cb8-401f626a7bfc"
+  },
+  {
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9e-0e79-7e7e-9cc9-df4afcb7c51f",
+    "lastSeenMessageId": "019e8bb1-17ba-74b3-a23d-1326f5253fc3"
+  },
+  {
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9e-2766-746f-bd82-fb997fafc466",
+    "lastSeenMessageId": "019e8bb1-17ba-74b3-a23d-1326f5253fc3"
+  },
+
+  {
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9d-dde6-7bd2-99a5-1258d2c14ccb",
+    "lastSeenMessageId": "019e8bb1-4b17-7d3f-b068-455783bdaf57"
+  },
+  {
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9e-2766-746f-bd82-fb997fafc466",
+    "lastSeenMessageId": "019e8bb1-6990-7018-acd6-05591907f386"
+  },
+  {
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9e-3cd0-7d78-8182-af3d90e34d71",
+    "lastSeenMessageId": "019e8bb1-4b17-7d3f-b068-455783bdaf57"
+  },
+  {
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9e-53aa-76cd-a05d-b6aeaf7b3b6b",
+    "lastSeenMessageId": "019e8bb1-3446-7d87-a21d-a563deea66a7"
+  }
+]

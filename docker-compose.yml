@@ -4,6 +4,9 @@ services:
     build:
       context: .
       dockerfile: Banter.API/Dockerfile
+    environment:
+      ConnectionStrings__Postgres: "Host=db;Port=5432;Database=${DB_NAME};Username=${DB_USER};Password=${DB_PASSWORD}"
+      ConnectionStrings__Redis: "cache:6379,password=${REDIS_PASSWORD},abortConnect=false"
 
   db:
     image: postgres:${POSTGRES_VERSION}

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "019e8b9e-bad4-7ec3-97f5-4a36516cf5ea",
+    "title": null,
+    "isGroup": false,
+    "createdAt": "2026-05-28T10:00:00Z",
+    "lastMessageId": null // "019e8bb0-4b40-773e-b1a8-62529bff780f"
+  },
+  {
+    "id": "019e8b9f-4ec1-7e38-a37a-5c05911c4fc9",
+    "title": null,
+    "isGroup": false,
+    "createdAt": "2026-05-29T09:00:00Z",
+    "lastMessageId": null // "019e8bb0-809d-7af0-bb46-d1da45e16fbb"
+  },
+  {
+    "id": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "title": "Backend Team",
+    "isGroup": true,
+    "createdAt": "2026-05-30T08:50:00Z",
+    "lastMessageId": null // "019e8bb1-17ba-74b3-a23d-1326f5253fc3"
+  },
+  {
+    "id": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "title": "Weekend Trip",
+    "isGroup": true,
+    "createdAt": "2026-05-31T18:00:00Z",
+    "lastMessageId": null // "019e8bb1-6990-7018-acd6-05591907f386"
+  }
+]

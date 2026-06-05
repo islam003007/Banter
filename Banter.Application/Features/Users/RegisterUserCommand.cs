@@ -33,7 +33,7 @@ internal class RegisterUserCommandValidator : AbstractValidator<RegisterUserComm
     }
 }
 
-internal class RegisterUserCommandHandler(UserManager<User> _userManager) : ICommandHandler<RegisterUserCommand, Guid>
+internal class RegisterUserCommandHandler(UserManager<User> _userManager, SignInManager<User> _signInManager) : ICommandHandler<RegisterUserCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
@@ -43,6 +43,8 @@ internal class RegisterUserCommandHandler(UserManager<User> _userManager) : ICom
 
         if (!identityResult.Succeeded)
             return Result.Failure<Guid>(new MultiError(identityResult.Errors.Select(e => new Error(e.Code, e.Description, ErrorType.Problem))));
+
+        await _signInManager.SignInAsync(user, isPersistent: true);
 
         return user.Id;
     }

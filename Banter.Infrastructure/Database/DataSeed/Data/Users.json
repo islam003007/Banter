@@ -1,0 +1,44 @@
+﻿[
+  {
+    "id": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "email": "ahmed@example.com",
+    "userName": "ahmed@example.com",
+    "displayName": "Ahmed",
+    "profilePictureUrl": null
+  },
+  {
+    "id": "019e8b9d-dde6-7bd2-99a5-1258d2c14ccb",
+    "email": "sara@example.com",
+    "userName": "sara@example.com",
+    "displayName": "Sara",
+    "profilePictureUrl": null
+  },
+  {
+    "id": "019e8b9e-0e79-7e7e-9cc9-df4afcb7c51f",
+    "email": "mohamed@example.com",
+    "userName": "mohamed@example.com",
+    "displayName": "Mohamed",
+    "profilePictureUrl": null
+  },
+  {
+    "id": "019e8b9e-2766-746f-bd82-fb997fafc466",
+    "email": "nour@example.com",
+    "userName": "nour@example.com",
+    "displayName": "Nour",
+    "profilePictureUrl": null
+  },
+  {
+    "id": "019e8b9e-3cd0-7d78-8182-af3d90e34d71",
+    "email": "omar@example.com",
+    "userName": "omar@example.com",
+    "displayName": "Omar",
+    "profilePictureUrl": null
+  },
+  {
+    "id": "019e8b9e-53aa-76cd-a05d-b6aeaf7b3b6b",
+    "email": "fatma@example.com",
+    "userName": "fatma@example.com",
+    "displayName": "Fatma",
+    "profilePictureUrl": null
+  }
+]

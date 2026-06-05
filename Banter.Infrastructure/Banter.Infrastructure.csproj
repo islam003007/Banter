@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Database\DataSeed\Data\*.json" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Banter.Application\Banter.Application.csproj" />
   </ItemGroup>
 

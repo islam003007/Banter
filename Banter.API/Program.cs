@@ -2,7 +2,7 @@ using Banter.API;
 using Banter.API.Extensions;
 using Banter.Application;
 using Banter.Infrastructure;
-using Banter.Infrastructure.Services;
+using Banter.Infrastructure.Database.DataSeed;
 using Banter.Infrastructure.Services.Realtime;
 using Serilog;
 
@@ -35,6 +35,8 @@ if (app.Environment.IsDevelopment())
     {
         c.RoutePrefix = "swagger";
     });
+
+    await SeederRunner.SeedDevelopment(app.Services);
 }
 
 app.UseCustomRequestLogging();

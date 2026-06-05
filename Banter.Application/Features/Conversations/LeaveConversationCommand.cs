@@ -34,7 +34,7 @@ internal class LeaveConversationCommandHandler(IAppDbContext _dbContext, IUserCo
             return Result.Failure(ConversationErrors.AccessDenied(request.ConverstaionId));
 
         if (!participant.Conversation.IsGroup)
-            return Result.Success(); // TODO: Upgrade this if needed.
+            return Result.Success(); // TODO: We can upgrade this to a blocking feature if needed.
 
         _dbContext.ConversationParticipants.Remove(participant);
 

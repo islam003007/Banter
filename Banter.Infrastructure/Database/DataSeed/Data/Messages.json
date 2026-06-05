@@ -1,0 +1,96 @@
+﻿[
+  {
+    "id": "019e8baf-b83c-70dc-b2e7-3395dc1aa2fe",
+    "conversationId": "019e8b9e-bad4-7ec3-97f5-4a36516cf5ea",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "content": "Hey Sara",
+    "createdAt": "2026-05-28T10:00:00Z"
+  },
+  {
+    "id": "019e8baf-e446-7de6-8d0a-9061a8b531c6",
+    "conversationId": "019e8b9e-bad4-7ec3-97f5-4a36516cf5ea",
+    "userId": "019e8b9d-dde6-7bd2-99a5-1258d2c14ccb",
+    "content": "Hi Ahmed",
+    "createdAt": "2026-05-28T10:01:00Z"
+  },
+  {
+    "id": "019e8bb0-1ac7-7ecd-a793-aef4f1e51db0",
+    "conversationId": "019e8b9e-bad4-7ec3-97f5-4a36516cf5ea",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "content": "How is the project going?",
+    "createdAt": "2026-05-28T10:02:00Z"
+  },
+  {
+    "id": "019e8bb0-4b40-773e-b1a8-62529bff780f",
+    "conversationId": "019e8b9e-bad4-7ec3-97f5-4a36516cf5ea",
+    "userId": "019e8b9d-dde6-7bd2-99a5-1258d2c14ccb",
+    "content": "Almost finished",
+    "createdAt": "2026-05-28T10:03:00Z"
+  },
+
+  {
+    "id": "019e8bb0-67a8-77d7-b1aa-ff62eccf852c",
+    "conversationId": "019e8b9f-4ec1-7e38-a37a-5c05911c4fc9",
+    "userId": "019e8b9e-0e79-7e7e-9cc9-df4afcb7c51f",
+    "content": "Did you push the migration?",
+    "createdAt": "2026-05-29T09:00:00Z"
+  },
+  {
+    "id": "019e8bb0-809d-7af0-bb46-d1da45e16fbb",
+    "conversationId": "019e8b9f-4ec1-7e38-a37a-5c05911c4fc9",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "content": "Yes, check main branch",
+    "createdAt": "2026-05-29T09:01:00Z"
+  },
+
+  {
+    "id": "019e8bb0-b0c8-7f23-87a2-0915f1f62777",
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "content": "Standup in 10 minutes",
+    "createdAt": "2026-05-30T08:50:00Z"
+  },
+  {
+    "id": "019e8bb0-da05-7810-b459-8904ed7ca0e6",
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9e-2766-746f-bd82-fb997fafc466",
+    "content": "I'll join shortly",
+    "createdAt": "2026-05-30T08:51:00Z"
+  },
+  {
+    "id": "019e8bb0-f95f-7a13-9cb8-401f626a7bfc",
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9d-dde6-7bd2-99a5-1258d2c14ccb",
+    "content": "Reviewing the PR now",
+    "createdAt": "2026-05-30T08:52:00Z"
+  },
+  {
+    "id": "019e8bb1-17ba-74b3-a23d-1326f5253fc3",
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9e-0e79-7e7e-9cc9-df4afcb7c51f",
+    "content": "CI passed successfully",
+    "createdAt": "2026-05-30T08:53:00Z"
+  },
+
+  {
+    "id": "019e8bb1-3446-7d87-a21d-a563deea66a7",
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9e-53aa-76cd-a05d-b6aeaf7b3b6b",
+    "content": "Where should we go this weekend?",
+    "createdAt": "2026-05-31T18:00:00Z"
+  },
+  {
+    "id": "019e8bb1-4b17-7d3f-b068-455783bdaf57",
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9e-3cd0-7d78-8182-af3d90e34d71",
+    "content": "How about Hurghada?",
+    "createdAt": "2026-05-31T18:01:00Z"
+  },
+  {
+    "id": "019e8bb1-6990-7018-acd6-05591907f386",
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9e-2766-746f-bd82-fb997fafc466",
+    "content": "Sounds good to me",
+    "createdAt": "2026-05-31T18:02:00Z"
+  }
+]

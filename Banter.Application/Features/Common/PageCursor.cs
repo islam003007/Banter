@@ -4,11 +4,11 @@ using System.Text.Json;
 
 namespace Banter.Application.Features.Common;
 
-internal class PageCursor
+public class PageCursor
 {
     public DateTime CreatedAt { get; }
     public Guid Id { get; }
-    private PageCursor(DateTime createdAt, Guid id)
+    public PageCursor(DateTime createdAt, Guid id)
     {
         CreatedAt = createdAt;
         Id = id;
