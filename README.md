@@ -70,6 +70,18 @@ docker compose up -d
 | Swagger       | http://localhost:8080/swagger|
 | Seq           | http://localhost:5431
 
+## Testing
+
+The unit test project covers cursor pagination and the shared Result/Error contracts without
+requiring PostgreSQL or Redis:
+
+```bash
+dotnet test Banter.UnitTests/Banter.UnitTests.csproj
+```
+
+CI builds the solution and runs the unit tests. Integration tests for auth boundaries and the
+SignalR/Redis path are the next layer.
+
 
 ## Third-Party Libraries
 

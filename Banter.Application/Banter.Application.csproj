@@ -20,4 +20,8 @@
     <ProjectReference Include="..\Banter.Domain\Banter.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Banter.UnitTests" />
+  </ItemGroup>
+
 </Project>

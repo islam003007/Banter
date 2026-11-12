@@ -6,7 +6,9 @@
     <Project Path="Banter.Infrastructure/Banter.Infrastructure.csproj" Id="892d084c-66a4-4803-be0d-9a8cbfb567bf" />
     <Project Path="Banter.SharedKernel/Banter.SharedKernel.csproj" Id="a49fa48f-580f-411c-a008-9a24b52b1d6b" />
   </Folder>
-  <Folder Name="/tests/" />
+  <Folder Name="/tests/">
+    <Project Path="Banter.UnitTests/Banter.UnitTests.csproj" />
+  </Folder>
   <Project Path="docker-compose.dcproj">
     <Build />
   </Project>
