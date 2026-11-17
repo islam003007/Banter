@@ -2,6 +2,7 @@
 using Banter.API.Endpoints;
 using Banter.API.ExceptionHandlers;
 using Banter.Application.Constants;
+using Banter.Application.Features.Auth;
 using Banter.Domain;
 using Banter.Domain.Users;
 using Banter.Infrastructure.Database;
@@ -16,6 +17,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddApi(this IServiceCollection services, IConfiguration configuration)
     {
+        services.Configure<DemoOptions>(configuration.GetSection(DemoOptions.SectionName));
+
         services.AddIdentity<User, Role>(options =>
         {
             options.User.RequireUniqueEmail = true;

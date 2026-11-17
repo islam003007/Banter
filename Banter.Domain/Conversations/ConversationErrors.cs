@@ -7,6 +7,9 @@ public static class ConversationErrors
     public static Error AccessDenied(Guid conversationId)
         => Error.Forbidden("Conversations.AccessDenied", $"You are not a member of the conversation with ID = {conversationId} to access it");
 
+    public static Error NotFound(Guid conversationId)
+        => Error.NotFound("Conversations.NotFound", $"The conversation with the ID = {conversationId} was not found");
+
     public static Error CreatorCannotBeParticipant =
         Error.Conflict("Conversations.CreatorCannotBeParticipant", "The conversation creator cannot also appear in the participants list.");
 }

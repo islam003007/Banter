@@ -22,7 +22,8 @@ public record GetInboxResponse(IReadOnlyList<GetInboxResponse.ConversationRespon
     string? LastMessageContent,
     DateTime? LastMessageCreatedAt,
     bool IsGroup,
-    bool IsOnline);
+    bool IsOnline,
+    int UnreadCount);
 }
 
 public record GetInboxQuery(string? Cursor, int PageSize) : IQuery<GetInboxResponse>;
@@ -39,7 +40,7 @@ internal class GetInboxQueryValidator : AbstractValidator<GetInboxQuery>
     }
 }
 
-internal class GetInboxHandler(IAppDbContext _dbContext, IUserContext _userContext,IPresenceService _presenceService)
+internal class GetInboxHandler(IAppDbContext _dbContext, IUserContext _userContext, IPresenceService _presenceService)
     : IQueryHandler<GetInboxQuery, GetInboxResponse>
 {
     public async Task<Result<GetInboxResponse>> Handle(GetInboxQuery request, CancellationToken cancellationToken)
@@ -56,35 +57,49 @@ internal class GetInboxHandler(IAppDbContext _dbContext, IUserContext _userConte
                 return Result.Failure<GetInboxResponse>(PageErrors.InvalidCursor);
         }
 
+        // Left join the last message so conversations without any messages still show up.
+        // Empty conversations are ordered by their creation time, which keeps cursor paging stable.
         var query =
             from p in _dbContext.ConversationParticipants
             join c in _dbContext.Conversations
                 on p.ConversationId equals c.Id
             join lm in _dbContext.Messages
-                on c.LastMessageId equals lm.Id
+                on c.LastMessageId equals lm.Id into lastMessages
+            from lm in lastMessages.DefaultIfEmpty()
+            join sm in _dbContext.Messages
+                on p.LastSeenMessageId equals sm.Id into seenMessages
+            from sm in seenMessages.DefaultIfEmpty()
             where p.UserId == userId
+            let activityAt = lm != null ? lm.CreatedAt : c.CreatedAt
+            let activityId = lm != null ? lm.Id : c.Id
             where decodedCursor == null
-               || lm.CreatedAt < decodedCursor.CreatedAt
-               || (lm.CreatedAt == decodedCursor.CreatedAt && lm.Id < decodedCursor.Id)
-            orderby lm.CreatedAt descending, lm.Id descending
+               || activityAt < decodedCursor.CreatedAt
+               || (activityAt == decodedCursor.CreatedAt && activityId < decodedCursor.Id)
+            orderby activityAt descending, activityId descending
             select new
             {
                 ConversationId = c.Id,
                 c.Title,
                 c.IsGroup,
-                LastMessageContent = lm.Content,
-                LastMessageCreatedAt = lm.CreatedAt,
-                lm.CreatedAt,
-                lm.Id
+                LastMessageContent = lm != null ? lm.Content : null,
+                LastMessageCreatedAt = lm != null ? (DateTime?)lm.CreatedAt : null,
+                UnreadCount = _dbContext.Messages.Count(m =>
+                    m.ConversationId == c.Id
+                    && m.UserId != userId
+                    && (sm == null
+                        || m.CreatedAt > sm.CreatedAt
+                        || (m.CreatedAt == sm.CreatedAt && m.Id > sm.Id))),
+                ActivityAt = activityAt,
+                ActivityId = activityId
             };
 
         var conversations = await query
                 .Take(request.PageSize + 1)
                 .ToListAsync(cancellationToken);
 
-        var hasMore= PaginationHelpers.Slice(conversations, request.PageSize);
+        var hasMore = PaginationHelpers.Slice(conversations, request.PageSize);
 
-        var nextCursor = PaginationHelpers.CreateNextCursor(conversations, hasMore, x => x.CreatedAt,x => x.Id);
+        var nextCursor = PaginationHelpers.CreateNextCursor(conversations, hasMore, x => x.ActivityAt, x => x.ActivityId);
 
         var conversationIds = conversations.Select(c => c.ConversationId).ToList();
 
@@ -111,21 +126,20 @@ internal class GetInboxHandler(IAppDbContext _dbContext, IUserContext _userConte
             Participants = p,
         });
 
-
         var isOnlineStatuses = await Task.WhenAll(enrichedConversations
             .Select(c => c.Conversation.IsGroup ? Task.FromResult(false)
             : _presenceService.IsOnlineAsync(c.Participants.Select(p => p.UserId).First(), cancellationToken)));
 
-
         var result = enrichedConversations
-            .Zip(isOnlineStatuses, (c, s) => 
+            .Zip(isOnlineStatuses, (c, s) =>
             new GetInboxResponse.ConversationResponse(c.Conversation.ConversationId,
-            c.Conversation.Title ?? string.Join(", " ,c.Participants.Select(p => p.DisplayName)), // domain doesn't allow for a group conversation to 
+            c.Conversation.Title ?? string.Join(", ", c.Participants.Select(p => p.DisplayName)), // domain doesn't allow for a group conversation to
             c.Participants.Select(p => p.ProfilePictureUrl).ToList(),                             // not have a title so slightly redundant.
             c.Conversation.LastMessageContent,
             c.Conversation.LastMessageCreatedAt,
             c.Conversation.IsGroup,
-            s))
+            s,
+            c.Conversation.UnreadCount))
             .ToList();
 
         return new GetInboxResponse(result, nextCursor, hasMore);

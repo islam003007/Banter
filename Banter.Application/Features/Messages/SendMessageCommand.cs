@@ -89,7 +89,8 @@ internal class SendMessageCommandHandler(IAppDbContext _dbContext, IUserContext 
             });
 
         var notification =
-            new MessageNotification(Guid.CreateVersion7(), conversation.Id, userId, user.DisplayName, user.ProfilePictureUrl, DateTime.UtcNow);
+            new MessageNotification(message.Id, conversation.Id, userId, message.Content, user.DisplayName,
+                user.ProfilePictureUrl, message.CreatedAt);
 
         await _notificationService.SendMessageAsync(notification, otherUsersIds);   // awaiting just for safety
 

@@ -72,15 +72,31 @@ docker compose up -d
 
 ## Testing
 
-The unit test project covers cursor pagination and the shared Result/Error contracts without
-requiring PostgreSQL or Redis:
+The unit test project covers cursor pagination, inbox/conversation queries, demo auth, realtime
+payloads, and the shared Result/Error contracts without requiring PostgreSQL or Redis:
 
 ```bash
 dotnet test Banter.UnitTests/Banter.UnitTests.csproj
 ```
 
-CI builds the solution and runs the unit tests. Integration tests for auth boundaries and the
-SignalR/Redis path are the next layer.
+## Demo frontend
+
+`Banter.Web/` is the portfolio demo client: React 19 + TypeScript + Vite, TanStack Query, and
+SignalR. It includes a one-click seeded-user picker; no password is stored in the browser.
+
+```bash
+cd Banter.Web
+npm install
+npm run dev
+# http://localhost:5173
+```
+
+The Vite proxy sends `/api` and `/hubs` to `http://localhost:8080`. For the `dotnet run` profile,
+which listens on `5261`, use `VITE_API_TARGET=http://localhost:5261 npm run dev`. See
+`Banter.Web/README.md` for the private-window realtime flow and production build notes.
+
+The demo-login endpoints are enabled only when `Demo:Enabled` is true; it is true in
+`appsettings.Development.json` and false by default elsewhere.
 
 
 ## Third-Party Libraries

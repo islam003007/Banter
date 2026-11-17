@@ -3,6 +3,7 @@
 public record MessageNotification(Guid Id,
     Guid ConversationId,
     Guid UserId,
-    string senderDisplayName,
+    string Content,
+    string SenderDisplayName,
     string? SenderProfilePictureUrl,
     DateTime CreatedAt);

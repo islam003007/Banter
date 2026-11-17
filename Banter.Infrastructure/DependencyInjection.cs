@@ -1,6 +1,7 @@
 ﻿using Banter.Application.Abstractions;
 using Banter.Application.Abstractions.Auth;
 using Banter.Application.Abstractions.Data;
+using Banter.Application.Abstractions.Demo;
 using Banter.Application.Abstractions.Realtime;
 using Banter.Infrastructure.Database;
 using Banter.Infrastructure.Services;
@@ -45,6 +46,7 @@ public static class DependencyInjection
         });
 
         services.AddSingleton<IPresenceService, PresenseService>();
+        services.AddSingleton<IDemoUserDirectory, SeededDemoUserDirectory>();
         services.AddScoped<IUserContext, UserContext>();
         services.AddSingleton<ISignalRNotifier, SignalRNotifier>();
 
