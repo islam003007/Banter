@@ -35,6 +35,8 @@ push. The demo frontend is in `Banter.Web/`.
 `Banter.Web/` is a local addition, not an API change: demo/standard auth, inbox, DM/group creation,
 chat history, SignalR, presence, read state and responsive layouts. The bot UI adds AI badges,
 persona hints, bot-only DM selection, bot message identity and the `ReceiveBotTyping` indicator.
+The inbox welcome now includes recent-thread cards, live stats and an AI desk; session copy was
+cleaned of cookie, user-id and SignalR implementation details. No API shape changed.
 
 ## AI bot pass
 
