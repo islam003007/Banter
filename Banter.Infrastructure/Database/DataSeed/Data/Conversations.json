@@ -1,4 +1,6 @@
 [
+  // Groups added after the original seed live in GroupConversations.json (GroupDataSeeder) so an
+  // already-seeded development database receives them. This file holds the original four threads.
   {
     "id": "019e8b9e-bad4-7ec3-97f5-4a36516cf5ea",
     "title": null,
@@ -18,13 +20,13 @@
     "title": "Backend Team",
     "isGroup": true,
     "createdAt": "2026-05-30T08:50:00Z",
-    "lastMessageId": null // "019e8bb1-17ba-74b3-a23d-1326f5253fc3"
+    "lastMessageId": null // "019e8bc7-3000-7000-8000-000000000003"
   },
   {
     "id": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
     "title": "Weekend Trip",
     "isGroup": true,
     "createdAt": "2026-05-31T18:00:00Z",
-    "lastMessageId": null // "019e8bb1-6990-7018-acd6-05591907f386"
+    "lastMessageId": null // "019e8bc7-2000-7000-8000-000000000004"
   }
 ]

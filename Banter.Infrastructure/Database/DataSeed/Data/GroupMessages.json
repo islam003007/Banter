@@ -1,0 +1,138 @@
+[
+  {
+    "id": "019e8bc7-2000-7000-8000-000000000001",
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "content": "I'm in. I can drive if we leave Friday afternoon.",
+    "createdAt": "2026-05-31T18:04:00Z"
+  },
+  {
+    "id": "019e8bc7-2000-7000-8000-000000000002",
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9d-dde6-7bd2-99a5-1258d2c14ccb",
+    "content": "Count me in too. I'll book the hotel tonight.",
+    "createdAt": "2026-05-31T18:06:00Z"
+  },
+  {
+    "id": "019e8bc7-2000-7000-8000-000000000003",
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9e-53aa-76cd-a05d-b6aeaf7b3b6b",
+    "content": "Perfect - let's meet at four.",
+    "createdAt": "2026-05-31T18:08:00Z"
+  },
+  {
+    "id": "019e8bc7-2000-7000-8000-000000000004",
+    "conversationId": "019e8b9f-a5f5-754a-ae80-d54e9633b727",
+    "userId": "019e8b9e-3cd0-7d78-8182-af3d90e34d71",
+    "content": "I'll bring the snorkeling gear.",
+    "createdAt": "2026-05-31T18:10:00Z"
+  },
+
+  {
+    "id": "019e8bc7-3000-7000-8000-000000000001",
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "content": "I'll take the migration review after standup.",
+    "createdAt": "2026-05-30T08:56:00Z"
+  },
+  {
+    "id": "019e8bc7-3000-7000-8000-000000000002",
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9e-0e79-7e7e-9cc9-df4afcb7c51f",
+    "content": "Thanks. I'll pair with Nour on the flaky test.",
+    "createdAt": "2026-05-30T08:58:00Z"
+  },
+  {
+    "id": "019e8bc7-3000-7000-8000-000000000003",
+    "conversationId": "019e8b9f-90c6-7da4-9742-57c01d09e846",
+    "userId": "019e8b9e-2766-746f-bd82-fb997fafc466",
+    "content": "Found it - the fixture reused a frozen clock.",
+    "createdAt": "2026-05-30T09:02:00Z"
+  },
+
+  {
+    "id": "019e8bc7-1000-7000-8000-000000000001",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000001",
+    "userId": "019e8b9d-dde6-7bd2-99a5-1258d2c14ccb",
+    "content": "Launch checklist is up. Smoke tests still need an owner.",
+    "createdAt": "2026-06-03T09:01:00Z"
+  },
+  {
+    "id": "019e8bc7-1000-7000-8000-000000000002",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000001",
+    "userId": "019e8b9e-0e79-7e7e-9cc9-df4afcb7c51f",
+    "content": "I'll take auth, group creation, and the invite flow.",
+    "createdAt": "2026-06-03T09:03:00Z"
+  },
+  {
+    "id": "019e8bc7-1000-7000-8000-000000000003",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000001",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "content": "I'll cover inbox pagination and the reconnect path.",
+    "createdAt": "2026-06-03T09:05:00Z"
+  },
+  {
+    "id": "019e8bc7-1000-7000-8000-000000000004",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000001",
+    "userId": "019e8b9e-2766-746f-bd82-fb997fafc466",
+    "content": "Found a race in the unread badge when two messages arrive together.",
+    "createdAt": "2026-06-03T09:09:00Z"
+  },
+  {
+    "id": "019e8bc7-1000-7000-8000-000000000005",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000001",
+    "userId": "019e8b9d-dde6-7bd2-99a5-1258d2c14ccb",
+    "content": "Good catch. Can you add it to the launch doc before standup?",
+    "createdAt": "2026-06-03T09:11:00Z"
+  },
+  {
+    "id": "019e8bc7-1000-7000-8000-000000000006",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000001",
+    "userId": "019e8b9e-0e79-7e7e-9cc9-df4afcb7c51f",
+    "content": "I reproduced it against the seeded groups - looks like a cursor tie-break.",
+    "createdAt": "2026-06-03T09:14:00Z"
+  },
+  {
+    "id": "019e8bc7-1000-7000-8000-000000000007",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000001",
+    "userId": "019e8b9e-2766-746f-bd82-fb997fafc466",
+    "content": "Pushed a fix with a regression test. Ready for another pass.",
+    "createdAt": "2026-06-03T09:16:00Z"
+  },
+
+  {
+    "id": "019e8bc7-4000-7000-8000-000000000001",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000002",
+    "userId": "019e8b9e-53aa-76cd-a05d-b6aeaf7b3b6b",
+    "content": "Uploaded the new empty-state frames.",
+    "createdAt": "2026-06-04T14:02:00Z"
+  },
+  {
+    "id": "019e8bc7-4000-7000-8000-000000000002",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000002",
+    "userId": "019e8b9e-2766-746f-bd82-fb997fafc466",
+    "content": "The secondary button contrast is much better in this pass.",
+    "createdAt": "2026-06-04T14:04:00Z"
+  },
+  {
+    "id": "019e8bc7-4000-7000-8000-000000000003",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000002",
+    "userId": "019e8b9d-c84a-75a0-b965-7d25b890ad80",
+    "content": "Can we keep the inbox preview to two lines on mobile?",
+    "createdAt": "2026-06-04T14:06:00Z"
+  },
+  {
+    "id": "019e8bc7-4000-7000-8000-000000000004",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000002",
+    "userId": "019e8b9e-3cd0-7d78-8182-af3d90e34d71",
+    "content": "Yes, and I'll trim the timestamp so it doesn't wrap.",
+    "createdAt": "2026-06-04T14:08:00Z"
+  },
+  {
+    "id": "019e8bc7-4000-7000-8000-000000000005",
+    "conversationId": "019e8bc6-1000-7000-8000-000000000002",
+    "userId": "019e8b9e-53aa-76cd-a05d-b6aeaf7b3b6b",
+    "content": "Updated both breakpoints. Ready for another look tomorrow.",
+    "createdAt": "2026-06-04T14:11:00Z"
+  }
+]

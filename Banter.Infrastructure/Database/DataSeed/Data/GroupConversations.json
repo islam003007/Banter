@@ -1,0 +1,16 @@
+[
+  {
+    "id": "019e8bc6-1000-7000-8000-000000000001",
+    "title": "Launch Room",
+    "isGroup": true,
+    "createdAt": "2026-06-03T09:00:00Z",
+    "lastMessageId": null // "019e8bc7-1000-7000-8000-000000000007"
+  },
+  {
+    "id": "019e8bc6-1000-7000-8000-000000000002",
+    "title": "Design Crit",
+    "isGroup": true,
+    "createdAt": "2026-06-04T14:00:00Z",
+    "lastMessageId": null // "019e8bc7-4000-7000-8000-000000000005"
+  }
+]

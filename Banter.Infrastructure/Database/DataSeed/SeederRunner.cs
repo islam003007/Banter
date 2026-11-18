@@ -25,6 +25,7 @@ public static class SeederRunner
         await DataSeeder.SeedAsync<Message>(serviceProvider, "Messages.json");
         await DataSeeder.SeedAsync<ConversationParticipant>(serviceProvider, "ConversationParticipants.json");
         await BotDataSeeder.SeedAsync(serviceProvider);
+        await GroupDataSeeder.SeedAsync(serviceProvider);
 
         await using (var scope = serviceProvider.CreateAsyncScope())
         {

@@ -55,3 +55,22 @@ cleaned of cookie, user-id and SignalR implementation details. No API shape chan
 - Bot seed data is Development-only. Added tests cover the reply processor, persona client, bot seed
   data and search flags.
 
+
+## Group conversation seed expansion
+
+- Added an idempotent Development `GroupDataSeeder` so existing demo databases receive new groups
+  without a reset.
+- Seeded **Launch Room** (Ahmed, Sara, Mohamed, Nour; 7 messages; 4 unread for Ahmed) and
+  **Design Crit** (Ahmed, Nour, Omar, Fatma; 5 messages). Ahmed is also a member of Weekend Trip
+  and Backend Team.
+- Added more messages to the existing Backend Team and Weekend Trip threads. The seeder resolves
+  conversation `lastMessageId` and participant `lastSeenMessageId`.
+- Tests now cover group membership, unread state, idempotent insertion and inbox output.
+- Banter suite: 57 tests pass.
+
+## Current client shell
+
+- Banter auth is full-bleed rather than a left/right split.
+- The workspace has no permanent conversation rail: conversations are in a slide-over drawer,
+  with `Cmd/Ctrl+K` search. Chat/welcome remain full-width. The chat page, palette and bots are
+  unchanged.
