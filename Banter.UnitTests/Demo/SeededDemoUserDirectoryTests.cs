@@ -38,6 +38,9 @@ public class SeededDemoUserDirectoryTests
     [InlineData(null)]
     [InlineData("")]
     [InlineData("stranger@example.com")]
+    [InlineData("ada@bots.local")]
+    [InlineData("milo@bots.local")]
+    [InlineData("nova@bots.local")]
     public void IsAllowed_RejectsAnythingOutsideTheSeed(string? email)
     {
         var directory = new SeededDemoUserDirectory();

@@ -12,6 +12,7 @@ public sealed class SeededDemoUserDirectory : IDemoUserDirectory
 {
     private static readonly IReadOnlyList<string> _emails = JsonDataLoader
         .LoadAsync<User>("Users.json")
+        .Where(user => !user.IsBot)
         .Select(user => user.Email)
         .Where(email => !string.IsNullOrWhiteSpace(email))
         .Select(email => email!)

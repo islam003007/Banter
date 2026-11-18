@@ -1,4 +1,6 @@
 ﻿using Banter.Application.Abstractions.Behaviors;
+using Banter.Application.Abstractions.Bots;
+using Banter.Application.Bots;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,6 +20,8 @@ public static class DependencyInjection
 
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+
+        services.AddScoped<IBotReplyProcessor, BotReplyProcessor>();
 
         return services;
     }

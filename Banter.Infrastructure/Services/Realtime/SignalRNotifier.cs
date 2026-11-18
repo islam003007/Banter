@@ -9,4 +9,9 @@ internal class SignalRNotifier(IHubContext<ChatHub, IChatClient> _hubcontext) : 
     {
         return _hubcontext.Clients.Users(userIds).ReceiveMessage(message);
     }
+
+    public Task SendBotTypingAsync(Guid conversationId, string botName, IReadOnlyList<string> userIds)
+    {
+        return _hubcontext.Clients.Users(userIds).ReceiveBotTyping(conversationId, botName);
+    }
 }

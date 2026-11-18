@@ -1,0 +1,29 @@
+[
+  {
+    "id": "019e8bc3-1000-7000-8000-000000000001",
+    "email": "ada@bots.local",
+    "userName": "ada@bots.local",
+    "displayName": "Ada",
+    "profilePictureUrl": null,
+    "isBot": true,
+    "createdAt": "2026-06-01T08:00:00Z"
+  },
+  {
+    "id": "019e8bc3-1000-7000-8000-000000000002",
+    "email": "milo@bots.local",
+    "userName": "milo@bots.local",
+    "displayName": "Milo",
+    "profilePictureUrl": null,
+    "isBot": true,
+    "createdAt": "2026-06-01T08:01:00Z"
+  },
+  {
+    "id": "019e8bc3-1000-7000-8000-000000000003",
+    "email": "nova@bots.local",
+    "userName": "nova@bots.local",
+    "displayName": "Nova",
+    "profilePictureUrl": null,
+    "isBot": true,
+    "createdAt": "2026-06-01T08:02:00Z"
+  }
+]

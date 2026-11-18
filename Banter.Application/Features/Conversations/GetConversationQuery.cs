@@ -17,7 +17,7 @@ public record GetConversationResponse(
     bool IsGroup,
     IReadOnlyList<GetConversationResponse.ParticipantResponse> Participants)
 {
-    public record ParticipantResponse(Guid UserId, string DisplayName, string? ProfilePictureUrl, bool IsOnline);
+    public record ParticipantResponse(Guid UserId, string DisplayName, string? ProfilePictureUrl, bool IsOnline, bool IsBot);
 }
 
 internal class GetConversationQueryValidator : AbstractValidator<GetConversationQuery>
@@ -68,7 +68,8 @@ internal class GetConversationQueryHandler(
             {
                 p.UserId,
                 u.DisplayName,
-                u.ProfilePictureUrl
+                u.ProfilePictureUrl,
+                u.IsBot
             }).ToListAsync(cancellationToken);
 
         var onlineStatuses = await Task.WhenAll(participants
@@ -80,7 +81,8 @@ internal class GetConversationQueryHandler(
                     participant.UserId,
                     participant.DisplayName,
                     participant.ProfilePictureUrl,
-                    isOnline))
+                    isOnline,
+                    participant.IsBot))
             .ToList();
 
         return new GetConversationResponse(

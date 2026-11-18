@@ -15,7 +15,7 @@ namespace Banter.Application.Features.Messages;
 public record GetMessagesQuery(Guid ConversationId, string? Cursor, int PageSize) : IQuery<GetMessagesResponse>;
 public record GetMessagesResponse(IReadOnlyList<GetMessagesResponse.MessageResponse> messages, string? NextCursor, bool HasMore, Guid? LastSeenMessageId)
 {
-    public record MessageResponse(Guid Id, string Content, DateTime CreatedAt, Guid UserId, string DisplayName, string? ProfilePictureUrl);
+    public record MessageResponse(Guid Id, string Content, DateTime CreatedAt, Guid UserId, string DisplayName, string? ProfilePictureUrl, bool IsBot);
 }
 
 internal class GetMessagesQueryValidator : AbstractValidator<GetMessagesQuery>
@@ -76,7 +76,8 @@ internal class GetMessagesQueryHandler(IAppDbContext _dbContext, IUserContext _u
                         m.CreatedAt,
                         m.UserId,
                         u.DisplayName,
-                        u.ProfilePictureUrl);
+                        u.ProfilePictureUrl,
+                        u.IsBot);
 
         var messages = await query
             .Take(request.PageSize + 1)

@@ -1,10 +1,14 @@
 ﻿using Banter.Application.Abstractions;
+using Banter.Application.Abstractions.Ai;
 using Banter.Application.Abstractions.Auth;
+using Banter.Application.Abstractions.Bots;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Demo;
 using Banter.Application.Abstractions.Realtime;
 using Banter.Infrastructure.Database;
 using Banter.Infrastructure.Services;
+using Banter.Infrastructure.Services.Ai;
+using Banter.Infrastructure.Services.Bots;
 using Banter.Infrastructure.Services.Realtime;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +53,10 @@ public static class DependencyInjection
         services.AddSingleton<IDemoUserDirectory, SeededDemoUserDirectory>();
         services.AddScoped<IUserContext, UserContext>();
         services.AddSingleton<ISignalRNotifier, SignalRNotifier>();
+
+        services.AddSingleton<IAiChatClient, DemoAiChatClient>();
+        services.AddSingleton<IBotReplyQueue, BotReplyQueue>();
+        services.AddHostedService<BotReplyBackgroundService>();
 
         return services;
     }

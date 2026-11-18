@@ -16,11 +16,12 @@ public class GetConversationQueryTests
         var ahmed = database.AddUser("ahmed@example.com", "Ahmed");
         var sara = database.AddUser("sara@example.com", "Sara");
         var mohamed = database.AddUser("mohamed@example.com", "Mohamed");
+        var ada = database.AddBot("ada@bots.local", "Ada");
 
         await database.SaveAsync();
 
         var conversation = Conversation.CreateGroupConversation(
-            [ahmed.Id, sara.Id, mohamed.Id],
+            [ahmed.Id, sara.Id, mohamed.Id, ada.Id],
             "Backend Team");
 
         database.Context.Conversations.Add(conversation);
@@ -40,11 +41,13 @@ public class GetConversationQueryTests
         Assert.Equal(conversation.Id, response.ConversationId);
         Assert.Equal("Backend Team", response.Title);
         Assert.True(response.IsGroup);
-        Assert.Equal(3, response.Participants.Count);
+        Assert.Equal(4, response.Participants.Count);
 
         Assert.True(response.Participants.Single(p => p.UserId == sara.Id).IsOnline);
         Assert.False(response.Participants.Single(p => p.UserId == ahmed.Id).IsOnline);
         Assert.False(response.Participants.Single(p => p.UserId == mohamed.Id).IsOnline);
+        Assert.True(response.Participants.Single(p => p.UserId == ada.Id).IsBot);
+        Assert.False(response.Participants.Single(p => p.UserId == sara.Id).IsBot);
     }
 
     [Fact]

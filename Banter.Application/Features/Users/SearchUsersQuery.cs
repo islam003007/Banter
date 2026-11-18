@@ -31,7 +31,7 @@ internal class SearchUsersQueryValidator : AbstractValidator<SearchUsersQuery>
 
 public record SearchUsersResponse(IReadOnlyList<SearchUsersResponse.UserResponse> Users, string? NextCursor, bool HasMore)
 {
-    public record UserResponse(Guid Id, string DisplayName, string Email, string? ProfilePicture, bool IsOnline);
+    public record UserResponse(Guid Id, string DisplayName, string Email, string? ProfilePicture, bool IsOnline, bool IsBot);
 }
 
 
@@ -63,6 +63,7 @@ internal class SearchUsersHandler(IAppDbContext _dbContext, IPresenceService pre
                 u.DisplayName,
                 u.ProfilePictureUrl,
                 u.Email,
+                u.IsBot,
                 u.CreatedAt
             })
             .OrderByDescending(u => u.CreatedAt).ThenByDescending(u => u.Id)
@@ -81,7 +82,7 @@ internal class SearchUsersHandler(IAppDbContext _dbContext, IPresenceService pre
 
         var results = users
             .Zip(usersIsOnline, (user, IsOnline) 
-            => new SearchUsersResponse.UserResponse(user.Id, user.DisplayName, user.Email!, user.ProfilePictureUrl, IsOnline))
+            => new SearchUsersResponse.UserResponse(user.Id, user.DisplayName, user.Email!, user.ProfilePictureUrl, IsOnline, user.IsBot))
             .ToList();
 
         return new SearchUsersResponse(results, nextCursor, hasMore);

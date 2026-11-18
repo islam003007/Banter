@@ -23,10 +23,18 @@ internal class LoginCommandValidator : AbstractValidator<LoginCommand>
     }
 }
 
-internal class LoginCommandHandler(SignInManager<User> _signInManager) : ICommandHandler<LoginCommand>
+internal class LoginCommandHandler(SignInManager<User> _signInManager, UserManager<User> _userManager) : ICommandHandler<LoginCommand>
 {
     public async Task<Result> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
+        var user = await _userManager.FindByEmailAsync(request.Email);
+
+        // Bot accounts exist only as message senders. They have no password and must never get a
+        // session, even if an operator later assigns one by accident. Return the generic failure so
+        // the response does not reveal which accounts are bots.
+        if (user is { IsBot: true })
+            return Result.Failure(AuthErrors.LoginFailed);
+
         var loginResult = await _signInManager.PasswordSignInAsync(request.Email,
             request.Password,
             isPersistent: true,

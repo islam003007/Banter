@@ -23,7 +23,8 @@ public record GetInboxResponse(IReadOnlyList<GetInboxResponse.ConversationRespon
     DateTime? LastMessageCreatedAt,
     bool IsGroup,
     bool IsOnline,
-    int UnreadCount);
+    int UnreadCount,
+    bool IsBot);
 }
 
 public record GetInboxQuery(string? Cursor, int PageSize) : IQuery<GetInboxResponse>;
@@ -114,7 +115,8 @@ internal class GetInboxHandler(IAppDbContext _dbContext, IUserContext _userConte
                 p.ConversationId,
                 p.UserId,
                 u.DisplayName,
-                u.ProfilePictureUrl
+                u.ProfilePictureUrl,
+                u.IsBot
             };
 
         var participants = await participantsQuery
@@ -139,7 +141,8 @@ internal class GetInboxHandler(IAppDbContext _dbContext, IUserContext _userConte
             c.Conversation.LastMessageCreatedAt,
             c.Conversation.IsGroup,
             s,
-            c.Conversation.UnreadCount))
+            c.Conversation.UnreadCount,
+            !c.Conversation.IsGroup && c.Participants.Any(p => p.IsBot)))
             .ToList();
 
         return new GetInboxResponse(result, nextCursor, hasMore);

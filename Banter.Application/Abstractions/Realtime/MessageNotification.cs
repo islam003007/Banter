@@ -6,4 +6,5 @@ public record MessageNotification(Guid Id,
     string Content,
     string SenderDisplayName,
     string? SenderProfilePictureUrl,
-    DateTime CreatedAt);
+    DateTime CreatedAt,
+    bool IsBot);

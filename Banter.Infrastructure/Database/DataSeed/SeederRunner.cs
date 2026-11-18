@@ -20,9 +20,11 @@ public static class SeederRunner
     public async static Task SeedDevelopment(IServiceProvider serviceProvider)
     {
         await IdentityDataSeeder.SeedUsers(serviceProvider);
+        await IdentityDataSeeder.SeedBots(serviceProvider);
         await DataSeeder.SeedAsync<Conversation>(serviceProvider, "Conversations.json");
         await DataSeeder.SeedAsync<Message>(serviceProvider, "Messages.json");
         await DataSeeder.SeedAsync<ConversationParticipant>(serviceProvider, "ConversationParticipants.json");
+        await BotDataSeeder.SeedAsync(serviceProvider);
 
         await using (var scope = serviceProvider.CreateAsyncScope())
         {

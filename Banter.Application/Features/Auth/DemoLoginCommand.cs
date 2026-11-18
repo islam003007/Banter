@@ -37,8 +37,9 @@ internal class DemoLoginCommandHandler(
         var user = await _dbContext.Users
             .FirstOrDefaultAsync(u => u.Id == request.UserId, cancellationToken);
 
-        // Never let a caller sign in as an account outside the seeded demo allow-list.
-        if (user is null || !_demoUsers.IsAllowed(user.Email))
+        // Never let a caller sign in as an account outside the seeded demo allow-list. Bots are
+        // excluded twice: they are seeded from a separate file and this explicit flag check.
+        if (user is null || user.IsBot || !_demoUsers.IsAllowed(user.Email))
             return Result.Failure(DemoErrors.UserNotAllowed);
 
         await _signInManager.SignInAsync(user, isPersistent: true);
