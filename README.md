@@ -98,6 +98,20 @@ which listens on `5261`, use `VITE_API_TARGET=http://localhost:5261 npm run dev`
 The demo-login endpoints are enabled only when `Demo:Enabled` is true; it is true in
 `appsettings.Development.json` and false by default elsewhere.
 
+## AI bot chats
+
+Three seeded AI contacts — **Ada**, **Milo** and **Nova** — appear in user search with an AI badge.
+Start a direct conversation with one and send a message. A hosted background worker emits a typing
+event, generates a persona-aware reply (offline demo brain by default), persists it as the bot and
+delivers it over SignalR. Bots only reply in one-to-one chats and never to other bots.
+
+Bots have `IsBot=true`, no passwords, and are excluded from standard/demo login. The migration
+`20261118044042_AddBotUsers` is applied automatically on startup in Development. The API change log
+at `docs/api-changes/2026-11-18-local-unreleased.md` records the bot schema, additive fields and
+SignalR event.
+
+The reply worker is in-process and intended for the demo; production should use a durable queue.
+
 
 ## Third-Party Libraries
 
