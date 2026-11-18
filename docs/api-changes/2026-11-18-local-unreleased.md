@@ -75,3 +75,14 @@ cleaned of cookie, user-id and SignalR implementation details. No API shape chan
 - The signed-in workspace restores the useful **permanent conversation rail + main pane** split. The rail becomes a drawer on mobile.
 - Group seed is visible in the rail: Launch Room, Design Crit, Backend Team, Weekend Trip. Ahmed is a member of every group; Launch Room has unread messages.
 - Chat bubbles, bot/AI badges, presence, details and the welcome activity cards were restyled without changing API behavior.
+
+## Channel desk refinement
+
+- Rebalanced Night Signal: neutral graphite canvas/panels, green reserved for brand, sent messages,
+  online and active states, amber unread/typing attention, ice-blue focus/links.
+- Conversation rail restyled as a channel index with signal meter, channel numbers, active waveform
+  and distinct group/AI treatments.
+- Added a transmission status band, channel identity header, uplink sent bubbles, graphite received
+  bubbles and a transmit composer.
+- Welcome page reframed as a live channel desk with operator/AI desk and recent transmissions.
+- No API or data changes.
