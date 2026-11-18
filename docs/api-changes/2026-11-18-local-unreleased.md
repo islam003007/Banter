@@ -70,7 +70,8 @@ cleaned of cookie, user-id and SignalR implementation details. No API shape chan
 
 ## Current client shell
 
-- Banter auth is full-bleed rather than a left/right split.
-- The workspace has no permanent conversation rail: conversations are in a slide-over drawer,
-  with `Cmd/Ctrl+K` search. Chat/welcome remain full-width. The chat page, palette and bots are
-  unchanged.
+- Banter now uses the **Night Signal** identity built around the supplied green speech-bubble B mark: dark forest surfaces, mint/emerald accents, Manrope + IBM Plex Mono, and no cream/paper/serif theme.
+- Auth remains a single full-bleed signal board (no split).
+- The signed-in workspace restores the useful **permanent conversation rail + main pane** split. The rail becomes a drawer on mobile.
+- Group seed is visible in the rail: Launch Room, Design Crit, Backend Team, Weekend Trip. Ahmed is a member of every group; Launch Room has unread messages.
+- Chat bubbles, bot/AI badges, presence, details and the welcome activity cards were restyled without changing API behavior.
