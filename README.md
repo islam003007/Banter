@@ -79,21 +79,10 @@ payloads, and the shared Result/Error contracts without requiring PostgreSQL or 
 dotnet test Banter.UnitTests/Banter.UnitTests.csproj
 ```
 
-## Demo frontend
+## Frontend
 
-`Banter.Web/` is the portfolio demo client: React 19 + TypeScript + Vite, TanStack Query, and
-SignalR. It includes a one-click seeded-user picker; no password is stored in the browser.
-
-```bash
-cd Banter.Web
-npm install
-npm run dev
-# http://localhost:5173
-```
-
-The Vite proxy sends `/api` and `/hubs` to `http://localhost:8080`. For the `dotnet run` profile,
-which listens on `5261`, use `VITE_API_TARGET=http://localhost:5261 npm run dev`. See
-`Banter.Web/README.md` for the private-window realtime flow and production build notes.
+The React client lives in a separate repository:
+[Banter.Frontend](https://github.com/islam003007/Banter.Frontend) (`Banter.Web/`, port 5173).
 
 The demo-login endpoints are enabled only when `Demo:Enabled` is true; it is true in
 `appsettings.Development.json` and false by default elsewhere.

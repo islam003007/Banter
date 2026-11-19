@@ -1,7 +1,7 @@
-# Banter — local API changes (not yet in `origin/main`)
+# Banter — API changes (2026-11-18)
 
-Baseline: `787e3cb` (`origin/main`). These changes are local-only and should be reviewed before
-push. The demo frontend is in `Banter.Web/`.
+Baseline: `787e3cb` (`origin/main`). The React client lives in the separate
+[Banter.Frontend](https://github.com/islam003007/Banter.Frontend) repository.
 
 ## API surface
 
@@ -30,13 +30,6 @@ push. The demo frontend is in `Banter.Web/`.
 - Unit tests cover current user, demo allowlist/gating, conversation access, empty-conversation inbox,
   unread counts, pagination, mark-read and realtime payload content. Build and tests pass locally.
 
-## Frontend
-
-`Banter.Web/` is a local addition, not an API change: demo/standard auth, inbox, DM/group creation,
-chat history, SignalR, presence, read state and responsive layouts. The bot UI adds AI badges,
-persona hints, bot-only DM selection, bot message identity and the `ReceiveBotTyping` indicator.
-The inbox welcome now includes recent-thread cards, live stats and an AI desk; session copy was
-cleaned of cookie, user-id and SignalR implementation details. No API shape changed.
 
 ## AI bot pass
 
