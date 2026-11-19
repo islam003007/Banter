@@ -49,7 +49,7 @@ public static class DependencyInjection
             options.Configuration.ChannelPrefix = RedisChannel.Literal("Banter");
         });
 
-        services.AddSingleton<IPresenceService, PresenseService>();
+        services.AddSingleton<IPresenceService, PresenceService>();
         services.AddSingleton<IDemoUserDirectory, SeededDemoUserDirectory>();
         services.AddScoped<IUserContext, UserContext>();
         services.AddSingleton<ISignalRNotifier, SignalRNotifier>();

@@ -10,6 +10,23 @@ public static class ConversationErrors
     public static Error NotFound(Guid conversationId)
         => Error.NotFound("Conversations.NotFound", $"The conversation with the ID = {conversationId} was not found");
 
-    public static Error CreatorCannotBeParticipant =
+    public static readonly Error CreatorCannotBeParticipant =
         Error.Conflict("Conversations.CreatorCannotBeParticipant", "The conversation creator cannot also appear in the participants list.");
+
+    public static readonly Error ParticipantsRequired =
+        Error.Problem("Conversations.ParticipantsRequired", "At least one participant is required.");
+
+    public static Error ParticipantsNotFound(IReadOnlyCollection<Guid> userIds)
+        => Error.NotFound(
+            "Conversations.ParticipantsNotFound",
+            $"These participants do not exist: {string.Join(", ", userIds)}");
+
+    public static readonly Error TitleRequired =
+        Error.Problem("Conversations.TitleRequired", "A group conversation must have a title.");
+
+    public static readonly Error TitleTooLong =
+        Error.Problem("Conversations.TitleTooLong", "The conversation title is too long.");
+
+    public static readonly Error TooManyParticipants =
+        Error.Problem("Conversations.TooManyParticipants", "The conversation has too many participants.");
 }

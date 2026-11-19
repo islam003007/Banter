@@ -25,35 +25,44 @@ internal sealed class BotReplyBackgroundService(
         {
             await foreach (var request in _queue.ReadAllAsync(stoppingToken))
             {
-                try
-                {
-                    var delay = Random.Shared.Next(MinimumDelayMs, MaximumDelayMs + 1);
+                var delay = Random.Shared.Next(MinimumDelayMs, MaximumDelayMs + 1);
 
-                    await Task.Delay(delay, stoppingToken);
+                await Task.Delay(delay, stoppingToken);
 
-                    await using var scope = _scopeFactory.CreateAsyncScope();
-
-                    var processor = scope.ServiceProvider.GetRequiredService<IBotReplyProcessor>();
-
-                    await processor.ProcessAsync(request, stoppingToken);
-                }
-                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
-                {
-                    break;
-                }
-                catch (Exception exception)
-                {
-                    _logger.LogError(
-                        exception,
-                        "Bot reply failed for conversation {ConversationId} and bot {BotUserId}",
-                        request.ConversationId,
-                        request.BotUserId);
-                }
+                await ProcessRequestAsync(request, stoppingToken);
             }
         }
         catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
         {
             // Normal host shutdown.
+        }
+    }
+
+    /// <summary>
+    /// Processes one request and isolates its failure. Extracted from the loop so the isolation can
+    /// be unit tested without waiting for the human-like typing delay.
+    /// </summary>
+    internal async Task ProcessRequestAsync(BotReplyRequest request, CancellationToken stoppingToken)
+    {
+        try
+        {
+            await using var scope = _scopeFactory.CreateAsyncScope();
+
+            var processor = scope.ServiceProvider.GetRequiredService<IBotReplyProcessor>();
+
+            await processor.ProcessAsync(request, stoppingToken);
+        }
+        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            _logger.LogError(
+                exception,
+                "Bot reply failed for conversation {ConversationId} and bot {BotUserId}",
+                request.ConversationId,
+                request.BotUserId);
         }
     }
 }

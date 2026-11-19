@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 ﻿using Banter.Application.Features.Messages;
 using Banter.Domain.Conversations;
 using Banter.UnitTests.TestSupport;
@@ -121,6 +122,69 @@ public class SendMessageCommandTests
 
         Assert.True(result.IsSuccess);
         Assert.Empty(queue.Requests);
+    }
+
+    [Fact]
+    public async Task Handle_DoesNotFailWhenTheBotQueueRejectsTheRequest()
+    {
+        await using var database = TestDatabase.Create();
+
+        var ahmed = database.AddUser("ahmed@example.com", "Ahmed");
+        var ada = database.AddBot("ada@bots.local", "Ada");
+
+        await database.SaveAsync();
+
+        var conversation = Conversation.CreateDM(ahmed.Id, ada.Id);
+        database.Context.Conversations.Add(conversation);
+
+        await database.SaveAsync();
+
+        var queue = new RejectingBotReplyQueue();
+
+        var handler = new SendMessageCommandHandler(
+            database.Context,
+            new FakeUserContext(ahmed.Id),
+            new FakeSignalRNotifier(),
+            queue);
+
+        var result = await handler.Handle(
+            new SendMessageCommand(conversation.Id, "Ada, are you there?"),
+            CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(1, queue.Attempts);
+        Assert.True(await database.Context.Messages.AnyAsync(m => m.Id == result.Value));
+    }
+
+    [Fact]
+    public async Task Handle_HonoursCancellationBeforeAnythingIsPersisted()
+    {
+        await using var database = TestDatabase.Create();
+
+        var ahmed = database.AddUser("ahmed@example.com", "Ahmed");
+        var sara = database.AddUser("sara@example.com", "Sara");
+
+        await database.SaveAsync();
+
+        var conversation = Conversation.CreateDM(ahmed.Id, sara.Id);
+        database.Context.Conversations.Add(conversation);
+
+        await database.SaveAsync();
+
+        var handler = new SendMessageCommandHandler(
+            database.Context,
+            new FakeUserContext(ahmed.Id),
+            new FakeSignalRNotifier(),
+            new CapturingBotReplyQueue());
+
+        using var cancellation = new CancellationTokenSource();
+        cancellation.Cancel();
+
+        await Assert.ThrowsAnyAsync<OperationCanceledException>(() => handler.Handle(
+            new SendMessageCommand(conversation.Id, "Hello Sara"),
+            cancellation.Token));
+
+        Assert.False(await database.Context.Messages.AnyAsync(m => m.ConversationId == conversation.Id));
     }
 
     [Fact]

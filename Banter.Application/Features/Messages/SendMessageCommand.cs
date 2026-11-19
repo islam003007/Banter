@@ -23,7 +23,9 @@ internal class SendMessageCommandValidator : AbstractValidator<SendMessageComman
             .NotEmpty();
 
         RuleFor(x => x.Content)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
+            .Must(content => !string.IsNullOrWhiteSpace(content)).WithMessage("Message content cannot be empty.")
             .MaximumLength(MessageConstants.MaxLength);
     }
 }
@@ -51,14 +53,12 @@ internal class SendMessageCommandHandler(
 
         _dbContext.Messages.Add(message);
 
-        // update last message id
-
         var conversation = await _dbContext.Conversations
             .Include(c => c.Participants)
             .Where(c => request.ConversationId == c.Id)
             .FirstOrDefaultAsync(cancellationToken);
 
-        if (conversation is null)                                                        // this signals database inconsitency not a simple 404.
+        if (conversation is null)                                                        // this signals database inconsistency, not a simple 404.
             throw new AppException("Conversations.NotFound",
                 $"The conversation with the ID = {request.ConversationId} was not found",
                 new
@@ -66,21 +66,16 @@ internal class SendMessageCommandHandler(
                     request.ConversationId,
                 });
 
-
         conversation.LastMessageId = message.Id;
 
-        var participant = conversation.Participants.Where(p => p.UserId == userId).First();
+        var participant = conversation.Participants.First(p => p.UserId == userId);
 
         participant.LastSeenMessageId = message.Id;
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
-
-        // send notification
-
-        List<string> otherUsersIds = conversation.Participants.Where(p => p.UserId != userId).Select(p => p.UserId.ToString()).ToList();
-
         var participantUserIds = conversation.Participants.Select(p => p.UserId).ToList();
 
+        // Read the sender/recipient metadata before committing: if this lookup is cancelled we
+        // have not written anything yet, so honouring the request token is safe here.
         var participantUsers = await _dbContext.Users
             .Where(u => participantUserIds.Contains(u.Id))
             .Select(u => new
@@ -89,7 +84,7 @@ internal class SendMessageCommandHandler(
                 u.DisplayName,
                 u.ProfilePictureUrl,
                 u.IsBot
-            }).ToListAsync(); // no cancellation here because the message is already sent. do you think this is correct ?
+            }).ToListAsync(cancellationToken);
 
         var sender = participantUsers.FirstOrDefault(u => u.Id == userId);
 
@@ -99,11 +94,21 @@ internal class SendMessageCommandHandler(
                 userId
             });
 
+        await _dbContext.SaveChangesAsync(cancellationToken);
+
+        // The message is committed. Deliberately use CancellationToken.None for the post-commit
+        // side effects: a client that disconnects immediately after sending must not suppress the
+        // realtime notification or the bot scheduling that are consequences of the persisted row.
+        var otherUsersIds = conversation.Participants
+            .Where(p => p.UserId != userId)
+            .Select(p => p.UserId.ToString())
+            .ToList();
+
         var notification =
             new MessageNotification(message.Id, conversation.Id, userId, message.Content, sender.DisplayName,
                 sender.ProfilePictureUrl, message.CreatedAt, sender.IsBot);
 
-        await _notificationService.SendMessageAsync(notification, otherUsersIds);   // awaiting just for safety
+        await _notificationService.SendMessageAsync(notification, otherUsersIds, CancellationToken.None);
 
         // Bots only answer humans in one-to-one conversations. Group chats are deliberately
         // excluded, and a bot sender never schedules another reply (no bot-to-bot loops).

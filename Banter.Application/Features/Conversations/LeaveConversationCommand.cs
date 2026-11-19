@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Banter.Application.Features.Conversations;
 
-public record LeaveConversationCommand(Guid ConverstaionId) : ICommand;
+public record LeaveConversationCommand(Guid ConversationId) : ICommand;
 
 internal class LeaveConversationCommandValidator : AbstractValidator<LeaveConversationCommand>
 {
     public LeaveConversationCommandValidator()
     {
-        RuleFor(x => x.ConverstaionId)
+        RuleFor(x => x.ConversationId)
             .NotEmpty();
     }
 }
@@ -26,15 +26,17 @@ internal class LeaveConversationCommandHandler(IAppDbContext _dbContext, IUserCo
         var userId = _userContext.UserId;
 
         var participant = await _dbContext.ConversationParticipants
-            .Where(p => p.UserId == userId && p.ConversationId == request.ConverstaionId)
+            .Where(p => p.UserId == userId && p.ConversationId == request.ConversationId)
             .Include(p => p.Conversation)
             .FirstOrDefaultAsync(cancellationToken);
 
         if (participant is null)
-            return Result.Failure(ConversationErrors.AccessDenied(request.ConverstaionId));
+            return Result.Failure(ConversationErrors.AccessDenied(request.ConversationId));
 
+        // Direct conversations are two-person threads; "leaving" would orphan the other side.
+        // Keep this an idempotent success instead of deleting another user's conversation.
         if (!participant.Conversation.IsGroup)
-            return Result.Success(); // TODO: We can upgrade this to a blocking feature if needed.
+            return Result.Success();
 
         _dbContext.ConversationParticipants.Remove(participant);
 

@@ -9,23 +9,26 @@ public class ChatHub(IPresenceService _presenceService) : Hub<IChatClient>
 {
     public override async Task OnConnectedAsync()
     {
-        var userId = Context.UserIdentifier;
-
-        if (userId != null)
-        {
-            await _presenceService.SetOnlineAsync(Guid.Parse(userId));
-        }
+        if (TryGetUserId(out var userId))
+            await _presenceService.ConnectAsync(userId, Context.ConnectionId);
 
         await base.OnConnectedAsync();
     }
 
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        if (TryGetUserId(out var userId))
+            await _presenceService.DisconnectAsync(userId, Context.ConnectionId);
+
+        await base.OnDisconnectedAsync(exception);
+    }
+
     public async Task Heartbeat()
     {
-        var userId = Context.UserIdentifier;
-
-        if (userId != null)
-        {
-            await _presenceService.SetOnlineAsync(Guid.Parse(userId));
-        }
+        if (TryGetUserId(out var userId))
+            await _presenceService.HeartbeatAsync(userId, Context.ConnectionId);
     }
+
+    private bool TryGetUserId(out Guid userId)
+        => Guid.TryParse(Context.UserIdentifier, out userId);
 }

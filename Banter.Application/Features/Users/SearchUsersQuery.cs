@@ -18,8 +18,10 @@ internal class SearchUsersQueryValidator : AbstractValidator<SearchUsersQuery>
     public SearchUsersQueryValidator()
     {
         RuleFor(x => x.SearchTerm)
+            .Cascade(CascadeMode.Stop)
             .NotEmpty()
-            .MinimumLength(2);
+            .Must(term => !string.IsNullOrWhiteSpace(term)).WithMessage("Search term cannot be empty.")
+            .Must(term => term.Trim().Length >= 2).WithMessage("Search term must be at least 2 characters.");
 
         RuleFor(x => x.PageSize)
             .InclusiveBetween(1, PaginationConstants.MaxPageSize);
@@ -51,9 +53,17 @@ internal class SearchUsersHandler(IAppDbContext _dbContext, IPresenceService pre
                 return Result.Failure<SearchUsersResponse>(PageErrors.InvalidCursor);
         }
 
-        // For postgres perhaps there are better solutions to implement searching.
+        // Case-insensitive search without taking an Npgsql dependency in the Application layer.
+        // Npgsql's EF.Functions.ILike would be the natural PostgreSQL choice, but this query must
+        // also execute against the EF in-memory provider used by the fast unit tests, where ILike
+        // cannot be translated. Lower-casing both sides is provider-agnostic and Npgsql translates
+        // it to `lower(column) LIKE lower(pattern)`; the PostgreSQL integration tests assert the
+        // real case-insensitive behaviour.
+        var searchTerm = request.SearchTerm.Trim().ToLowerInvariant();
+
         var users = await _dbContext.Users
-            .Where(u => u.DisplayName.Contains(request.SearchTerm) || u.Email!.Contains(request.SearchTerm))
+            .Where(u => u.DisplayName.ToLower().Contains(searchTerm)
+                || (u.Email != null && u.Email.ToLower().Contains(searchTerm)))
             .Where(u => decodedCursor == null
                     || u.CreatedAt < decodedCursor.CreatedAt
                     || (u.CreatedAt == decodedCursor.CreatedAt && u.Id < decodedCursor.Id))
@@ -88,5 +98,3 @@ internal class SearchUsersHandler(IAppDbContext _dbContext, IPresenceService pre
         return new SearchUsersResponse(results, nextCursor, hasMore);
     }
 }
-
-

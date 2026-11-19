@@ -38,7 +38,7 @@ internal class LoginCommandHandler(SignInManager<User> _signInManager, UserManag
         var loginResult = await _signInManager.PasswordSignInAsync(request.Email,
             request.Password,
             isPersistent: true,
-            lockoutOnFailure: false); // In a producitno system set to true.
+            lockoutOnFailure: false); // Production should enable lockout (and the matching Identity option).
 
         // These are extra checks in this system neither lockout nor email confirmation is enabled right now.
         if (loginResult.Succeeded)

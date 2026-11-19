@@ -20,7 +20,7 @@ internal class UserContext : IUserContext
             string? userIdValue = _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
 
             if (!Guid.TryParse(userIdValue, out Guid userId))
-                throw new AppException("Users.NotAuthinticated", "The curent user is not authenticated");
+                throw new AppException("Users.NotAuthenticated", "The current user is not authenticated");
 
             return userId;
         }

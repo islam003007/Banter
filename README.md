@@ -8,9 +8,10 @@ Banter demonstrates modern backend engineering practices including Clean Archite
 * Cookie-based authentication with ASP.NET Identity
 * Direct and group conversations
 * Real-time message notifications using SignalR
-* Online/offline presence tracking
+* Connection-aware online/offline presence tracking
 * Cursor pagination
 * Structured error handling with Problem Details
+* Health and readiness endpoints
 * Centralized logging with Serilog and Seq
 * Dockerized development environment
 ## Architecture
@@ -48,6 +49,18 @@ Redis is used for:
 
 This allows multiple application instances to share real-time state, authentication keys, and messaging infrastructure.
 
+Presence is connection-based rather than a single per-user flag. Each SignalR connection is a field
+in a Redis hash (`presence:{userId}`) carrying its last heartbeat, with a two-minute TTL and a
+25-second client heartbeat. Multiple tabs keep a user online until the last connection disconnects;
+stale fields left by a crashed instance are pruned when presence is read.
+
+### Cookie Security
+
+The auth cookie is explicit about its transport settings: `HttpOnly`, `SameSite=Lax`, a
+14-day sliding expiry, and `Secure` in production (`SameAsRequest` locally so HTTP development
+still works). Identity's security-stamp validation is preserved by configuring the existing cookie
+events instead of replacing them.
+
 ### Result Pattern + Problem Details
 
 Expected business failures are returned through a Result Pattern, while unexpected failures are handled centrally and exposed through standardized Problem Details responses.
@@ -55,6 +68,13 @@ Expected business failures are returned through a Result Pattern, while unexpect
 ### Cursor Pagination
 
 Conversation endpoints use cursor pagination to provide stable ordering and better scalability than offset-based pagination.
+
+### Case-insensitive Search
+
+User search is case-insensitive for display names and emails. The query lives in the Application
+layer, so it lower-cases both sides (Npgsql translates this to `lower(column) LIKE lower(pattern)`)
+rather than taking a PostgreSQL-only `ILike` dependency that the EF in-memory unit tests cannot
+translate. The integration tests exercise the real PostgreSQL SQL.
 
 ## Running Locally
 1. Copy .env.example to .env and provide secure values.
@@ -68,16 +88,42 @@ docker compose up -d
 | ------------- |:-------------:|
 | API           | http://localhost:8080|
 | Swagger       | http://localhost:8080/swagger|
-| Seq           | http://localhost:5431
+| Seq           | http://localhost:5431|
 
 ## Testing
 
-The unit test project covers cursor pagination, inbox/conversation queries, demo auth, realtime
-payloads, and the shared Result/Error contracts without requiring PostgreSQL or Redis:
+Both test projects use xUnit v3 on the Microsoft.Testing.Platform runner (`global.json` selects the
+runner; use `--project`/`--solution` with `dotnet test`).
+
+Fast tests (no Docker):
 
 ```bash
-dotnet test Banter.UnitTests/Banter.UnitTests.csproj
+dotnet test --project Banter.UnitTests/Banter.UnitTests.csproj
 ```
+
+Integration tests use real Testcontainers PostgreSQL and Redis, apply the EF migrations, and run the
+Development seeders. Respawn resets the database between tests while preserving
+`__EFMigrationsHistory`, then the seeders are re-run; Redis presence state is flushed. The suite
+covers auth, conversations, messages, bots, search, health, SignalR messages/presence, and a
+migration/seed smoke test. Docker must be available:
+
+```bash
+dotnet test --project Banter.IntegrationTests/Banter.IntegrationTests.csproj
+```
+
+Run everything:
+
+```bash
+dotnet test --solution Banter.slnx
+```
+
+If Docker/Testcontainers is unavailable, the integration tests report a skip with the Docker error
+instead of failing with a misleading connection error.
+
+### Health checks
+
+`GET /health` is a dependency-free liveness probe. `GET /health/ready` checks PostgreSQL and Redis
+and returns `200` when both are healthy or `503` with per-dependency status when they are not.
 
 ## Frontend
 

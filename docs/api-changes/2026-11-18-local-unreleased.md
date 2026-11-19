@@ -79,3 +79,83 @@ Baseline: `787e3cb` (`origin/main`). The React client lives in the separate
   bubbles and a transmit composer.
 - Welcome page reframed as a live channel desk with operator/AI desk and recent transmissions.
 - No API or data changes.
+
+## Hardening pass (2026-11-19)
+
+No database migration: the schema is unchanged.
+
+### Presence
+
+- `IPresenceService` is now connection-aware: `ConnectAsync`, `DisconnectAsync`, `HeartbeatAsync`,
+  `IsOnlineAsync`, and `GetConnectionCountAsync`. `IsOnlineAsync` keeps its query semantics.
+- `ChatHub` registers `Context.ConnectionId` on connect/heartbeat and removes it in
+  `OnDisconnectedAsync`; closing one tab no longer marks a user offline while another tab is open.
+- Redis stores `presence:{userId}` as a hash of connection id → last heartbeat (Unix ms), with a
+  two-minute key TTL refreshed by heartbeats. Reads prune per-connection stale fields, and all-stale
+  keys are deleted, so a crashed server cannot leave a user online forever.
+- The internal `PresenseService` typo was fixed to `PresenceService`.
+
+### Conversations and messages
+
+- Creating a conversation validates that every participant id exists and returns
+  `404 Conversations.ParticipantsNotFound` instead of an opaque foreign-key 500.
+- Group titles are trimmed, required, and limited to 200 characters; participant lists are deduped
+  and limited to 50 ids (excluding the implicit creator).
+- The creator is added to the group's participant list. Previously the creator could create a group
+  but was not a member of it (could not read or post).
+- Direct-conversation reuse now filters `IsGroup == false`, so a group that has shrunk to two
+  members is never reused as a DM.
+- `SendMessageCommand` now observes the request token for all pre-commit reads/writes. Post-commit
+  work (the realtime notification and bot enqueue) deliberately uses `CancellationToken.None`: a
+  client disconnect must not suppress consequences of an already-persisted message. Message content
+  rejects whitespace-only values.
+- Validators are now registered with FluentValidation. The validation pipeline previously received
+  an empty `IEnumerable<IValidator<T>>`, so no request validator ran.
+
+### Bots
+
+- `BotReplyQueue.TryEnqueue` logs a warning and returns `false` when the bounded queue is full; it
+  never throws or blocks the already-committed send.
+- The background worker's per-request failure isolation is extracted and unit tested: one failed
+  reply is logged, and the worker continues with the next request.
+
+### Security, config, and search
+
+- Auth cookie: explicit `HttpOnly`, `SameSite=Lax`, 14-day sliding expiry, and
+  `SecurePolicy` of `SameAsRequest` in Development / `Always` elsewhere. The existing cookie event
+  object is configured in place so Identity's security-stamp validation stays wired.
+- Added anonymous `GET /health` (liveness) and `GET /health/ready` (PostgreSQL + Redis; 200/503).
+- User search is case-insensitive for display names and emails.
+- Fixed internal typos (`DependencyInjection` filenames, `Users.NotAuthenticated`,
+  `LeaveConversationCommand.ConversationId`) and stale production comments.
+
+### Integration tests
+
+New `Banter.IntegrationTests` project modeled on FalkElTawfik:
+
+- `WebApplicationFactory<Program>` (enabled by `InternalsVisibleTo` in `Banter.API.csproj`) with
+  real Testcontainers PostgreSQL 14 and Redis 8.
+- `IntegrationTestBase` + shared collection fixture; parallelization disabled.
+- Respawn reset per test, preserving `__EFMigrationsHistory`; the Development seeders are re-run and
+  Redis presence state is flushed.
+- Helpers for register/login/demo login, authenticated clients, database queries, ProblemDetails
+  parsing, cookie extraction, and polling.
+- Coverage: auth (register/login/logout/me, validation, 401/403 shape, demo gating, bot login),
+  conversations (DM/group, duplicate DM, missing participants, title limits, creator membership,
+  inbox/read/detail access, leave), messages (send/validation/non-participant/unread/pagination),
+  bots (typing/reply/no group reply), realtime (authenticated SignalR `ReceiveMessage` and
+  connection-count presence), search case-insensitivity, health, and migrations/seed.
+- Docker unavailable: the factory records the Testcontainers error and integration tests call
+  `Assert.Skip` with that reason.
+
+### Commands
+
+```bash
+dotnet build Banter.slnx
+dotnet test --project Banter.UnitTests/Banter.UnitTests.csproj
+dotnet test --project Banter.IntegrationTests/Banter.IntegrationTests.csproj
+dotnet test --solution Banter.slnx
+```
+
+Both test projects now use xUnit v3 on Microsoft.Testing.Platform; `global.json` selects the runner.
+Current local result: 75 unit + 46 integration = 121 passing.

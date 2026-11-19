@@ -34,6 +34,45 @@ public class SearchUsersQueryTests
     }
 
     [Fact]
+    public async Task Handle_IsCaseInsensitiveForDisplayNameAndEmail()
+    {
+        await using var database = TestDatabase.Create();
+
+        database.AddUser("ada@example.com", "Ada Lovelace");
+        database.AddUser("grace@example.com", "Grace Hopper");
+
+        await database.SaveAsync();
+
+        var handler = new SearchUsersHandler(
+            database.Context,
+            new FakePresenceService());
+
+        var byDisplayName = await handler.Handle(
+            new SearchUsersQuery("ADA", null, 10),
+            CancellationToken.None);
+
+        Assert.True(byDisplayName.IsSuccess);
+        Assert.Equal("Ada Lovelace", Assert.Single(byDisplayName.Value.Users).DisplayName);
+
+        var byEmail = await handler.Handle(
+            new SearchUsersQuery("ADA@EXAMPLE.COM", null, 10),
+            CancellationToken.None);
+
+        Assert.True(byEmail.IsSuccess);
+        Assert.Equal("Ada Lovelace", Assert.Single(byEmail.Value.Users).DisplayName);
+    }
+
+    [Fact]
+    public async Task Validator_RejectsWhitespaceOnlySearchTerms()
+    {
+        var validator = new SearchUsersQueryValidator();
+
+        var result = await validator.ValidateAsync(new SearchUsersQuery("   ", null, 10));
+
+        Assert.False(result.IsValid);
+    }
+
+    [Fact]
     public async Task Handle_ReturnsFalseForHumanAccounts()
     {
         await using var database = TestDatabase.Create();
