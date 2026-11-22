@@ -13,6 +13,7 @@ obj/
 # Docker / Environment
 .env
 .env.local
+northflank.env
 
 
 # Database / Storage
