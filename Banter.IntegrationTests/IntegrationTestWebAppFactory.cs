@@ -63,6 +63,7 @@ public sealed class IntegrationTestWebAppFactory : WebApplicationFactory<Program
         Environment.SetEnvironmentVariable("ConnectionStrings__Redis", _redis.GetConnectionString());
         Environment.SetEnvironmentVariable("DataSeed__UsersPassword", "Password@123");
         Environment.SetEnvironmentVariable("Demo__Enabled", "true");
+        Environment.SetEnvironmentVariable("RateLimit__Enabled", "false");
         // appsettings.json points Seq at the compose hostname; point the sink at an unreachable
         // local port instead. The sink batches asynchronously and never blocks requests.
         Environment.SetEnvironmentVariable("Serilog__WriteTo__1__Args__serverUrl", "http://localhost:9999");

@@ -1,4 +1,5 @@
 using Banter.API;
+using Banter.API.Constants;
 using Banter.API.Extensions;
 using Banter.Application;
 using Banter.Infrastructure;
@@ -44,6 +45,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseCustomRequestLogging();
 app.UseExceptionHandler();
+// Must run before authentication so CORS preflights are answered without a 401.
+app.UseCors(Policies.FrontendCors);
+app.UseRateLimiter();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapEndpoints();
@@ -91,6 +95,7 @@ app.MapGet("/health/ready", async (
     .WithTags("health")
     .AllowAnonymous();
 
-app.MapHub<ChatHub>("/hubs/chat");
+app.MapHub<ChatHub>("/hubs/chat")
+    .RequireCors(Policies.FrontendCors);
 
 app.Run();

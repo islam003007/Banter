@@ -5,10 +5,12 @@ using Banter.Application.Abstractions.Bots;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Demo;
 using Banter.Application.Abstractions.Realtime;
+using Banter.Application.Features.Auth;
 using Banter.Infrastructure.Database;
 using Banter.Infrastructure.Services;
 using Banter.Infrastructure.Services.Ai;
 using Banter.Infrastructure.Services.Bots;
+using Banter.Infrastructure.Services.Demo;
 using Banter.Infrastructure.Services.Realtime;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
@@ -57,6 +59,18 @@ public static class DependencyInjection
         services.AddSingleton<IAiChatClient, DemoAiChatClient>();
         services.AddSingleton<IBotReplyQueue, BotReplyQueue>();
         services.AddHostedService<BotReplyBackgroundService>();
+
+        var demoResetSection = configuration.GetSection(DemoResetOptions.SectionName);
+        if (configuration.GetValue<bool>("Demo:Enabled") &&
+            demoResetSection.GetValue<bool>(nameof(DemoResetOptions.Enabled)))
+        {
+            services.AddOptions<DemoResetOptions>()
+                .Bind(demoResetSection)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
+            services.AddHostedService<DemoResetService>();
+        }
 
         return services;
     }

@@ -77,11 +77,32 @@ rather than taking a PostgreSQL-only `ILike` dependency that the EF in-memory un
 translate. The integration tests exercise the real PostgreSQL SQL.
 
 ## Running Locally
-1. Copy .env.example to .env and provide secure values.
+1. Copy `.env.example` to `.env` and provide the database/Redis secrets plus
+   `DATA_SEED_USERS_PASSWORD`. Replace the placeholder; a fresh seed fails if
+   the value is missing or invalid.
 2. Start the application:
 ```
 docker compose up -d
 ```
+
+`DATA_SEED_USERS_PASSWORD` is a public demo credential used only for the seeded
+accounts. It is never a production secret. It must have at least 8 characters,
+uppercase, lowercase, a digit, and a non-alphanumeric character. Do not reuse it
+outside a disposable demo database.
+
+Changing this value does not update users that were already seeded. Reset the
+demo database or let the enabled demo-reset service reseed it.
+
+### Demo reset and rate limiting
+
+- `Demo:Reset:Enabled` is off by default. When `Demo:Enabled` and
+  `Demo:Reset:Enabled` are both true at startup, a background service wipes the
+  demo rows and re-runs the seeders every `Demo:Reset:IntervalHours` hours.
+- Only enable the reset service on a dedicated demo database. It is not a
+  production maintenance job.
+- `RateLimit` applies a per-IP fixed window (default: 120 requests per minute).
+  It can be disabled or tuned through `RateLimit__Enabled`,
+  `RateLimit__PermitLimit`, and `RateLimit__WindowSeconds`.
 ### Services
 
 | Service  | URL |
@@ -125,6 +146,14 @@ instead of failing with a misleading connection error.
 `GET /health` is a dependency-free liveness probe. `GET /health/ready` checks PostgreSQL and Redis
 and returns `200` when both are healthy or `503` with per-dependency status when they are not.
 
+## Public demo credentials
+
+The seeded demo users share a password supplied by
+`DataSeed:UsersPassword` / `DATA_SEED_USERS_PASSWORD`. It is intentionally
+public for this disposable portfolio demo. The one-click roster does not need
+it, and the password must never be reused for a real account or deployment.
+No real user data is present; demo data may be reset.
+
 ## Frontend
 
 The React client lives in a separate repository:
@@ -132,6 +161,10 @@ The React client lives in a separate repository:
 
 The demo-login endpoints are enabled only when `Demo:Enabled` is true; it is true in
 `appsettings.Development.json` and false by default elsewhere.
+
+CORS is environment-only. Set the exact frontend origin (no trailing slash) with
+`Frontend__AllowedOrigins__0=https://<frontend-origin>`. An empty list denies
+cross-origin requests rather than allowing everything.
 
 ## AI bot chats
 

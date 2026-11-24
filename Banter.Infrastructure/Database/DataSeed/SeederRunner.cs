@@ -1,5 +1,6 @@
 ﻿using Banter.Domain.Conversations;
 using Banter.Domain.Messages;
+using Banter.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -15,6 +16,38 @@ public static class SeederRunner
 
             await dbContext.Database.MigrateAsync();
         }
+    }
+
+    /// <summary>
+    /// Clears all demo data and re-runs the development seeders. This must only be used
+    /// against a dedicated demo database; the caller enforces the demo configuration.
+    /// </summary>
+    public static async Task ResetDemoDataAsync(IServiceProvider serviceProvider)
+    {
+        await using (var scope = serviceProvider.CreateAsyncScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+            // Break the restrictive message references before deleting the message rows.
+            await dbContext.Conversations.ExecuteUpdateAsync(setters =>
+                setters.SetProperty(conversation => conversation.LastMessageId, (Guid?)null));
+            await dbContext.ConversationParticipants.ExecuteUpdateAsync(setters =>
+                setters.SetProperty(participant => participant.LastSeenMessageId, (Guid?)null));
+
+            await dbContext.Messages.ExecuteDeleteAsync();
+            await dbContext.ConversationParticipants.ExecuteDeleteAsync();
+            await dbContext.Conversations.ExecuteDeleteAsync();
+
+            await dbContext.UserRoles.ExecuteDeleteAsync();
+            await dbContext.UserClaims.ExecuteDeleteAsync();
+            await dbContext.UserLogins.ExecuteDeleteAsync();
+            await dbContext.UserTokens.ExecuteDeleteAsync();
+            await dbContext.RoleClaims.ExecuteDeleteAsync();
+            await dbContext.Users.ExecuteDeleteAsync();
+            await dbContext.Roles.ExecuteDeleteAsync();
+        }
+
+        await SeedDevelopment(serviceProvider);
     }
 
     public async static Task SeedDevelopment(IServiceProvider serviceProvider)

@@ -29,6 +29,8 @@ public static class IdentityDataSeeder
 
             if (assignPassword)
             {
+                // Demo-only credential. It is intentionally public for seeded accounts and
+                // must never be reused outside a disposable demo database.
                 password = scope.ServiceProvider.GetRequiredService<IConfiguration>()["DataSeed:UsersPassword"] ??
                     throw new InvalidOperationException("DataSeed:UsersPassword is not configured");
             }

@@ -1,6 +1,7 @@
 ﻿using Banter.API.Constants;
 using Banter.API.Endpoints;
 using Banter.API.ExceptionHandlers;
+using Banter.API.Options;
 using Banter.Application.Constants;
 using Banter.Application.Features.Auth;
 using Banter.Domain;
@@ -11,6 +12,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Serilog.Extensions.Hosting;
 using System.Diagnostics;
+using System.Threading.RateLimiting;
 
 namespace Banter.API;
 
@@ -22,6 +24,54 @@ public static class DependencyInjection
         IWebHostEnvironment environment)
     {
         services.Configure<DemoOptions>(configuration.GetSection(DemoOptions.SectionName));
+
+        // Same-site frontend on a sibling subdomain. Origins come from the
+        // environment only; no production origin is committed to the repository.
+        // An empty list denies every cross-origin request (fail-closed).
+        var allowedOrigins = configuration
+            .GetSection("Frontend:AllowedOrigins")
+            .Get<string[]>() ?? [];
+
+        services.AddCors(options => options.AddPolicy(Policies.FrontendCors, policy =>
+        {
+            if (allowedOrigins.Length == 0)
+            {
+                return;
+            }
+
+            policy.WithOrigins(allowedOrigins)
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }));
+
+        var rateLimit = configuration
+            .GetSection(RateLimitOptions.SectionName)
+            .Get<RateLimitOptions>() ?? new RateLimitOptions();
+
+        services.AddRateLimiter(options =>
+        {
+            options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+            options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(context =>
+            {
+                if (!rateLimit.Enabled)
+                {
+                    return RateLimitPartition.GetNoLimiter("disabled");
+                }
+
+                var partitionKey = context.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+
+                return RateLimitPartition.GetFixedWindowLimiter(partitionKey, _ =>
+                    new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = rateLimit.PermitLimit,
+                        Window = TimeSpan.FromSeconds(rateLimit.WindowSeconds),
+                        QueueLimit = 0,
+                        AutoReplenishment = true
+                    });
+            });
+        });
 
         services.AddIdentity<User, Role>(options =>
         {
