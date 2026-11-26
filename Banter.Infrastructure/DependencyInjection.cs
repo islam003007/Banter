@@ -5,6 +5,7 @@ using Banter.Application.Abstractions.Bots;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Demo;
 using Banter.Application.Abstractions.Realtime;
+using Banter.Application.Bots;
 using Banter.Application.Features.Auth;
 using Banter.Infrastructure.Database;
 using Banter.Infrastructure.Services;
@@ -56,9 +57,18 @@ public static class DependencyInjection
         services.AddScoped<IUserContext, UserContext>();
         services.AddSingleton<ISignalRNotifier, SignalRNotifier>();
 
-        services.AddSingleton<IAiChatClient, DemoAiChatClient>();
-        services.AddSingleton<IBotReplyQueue, BotReplyQueue>();
-        services.AddHostedService<BotReplyBackgroundService>();
+        services.Configure<BotOptions>(configuration.GetSection(BotOptions.SectionName));
+
+        if (configuration.GetValue<bool>($"{BotOptions.SectionName}:Enabled"))
+        {
+            services.AddSingleton<IAiChatClient, DemoAiChatClient>();
+            services.AddSingleton<IBotReplyQueue, BotReplyQueue>();
+            services.AddHostedService<BotReplyBackgroundService>();
+        }
+        else
+        {
+            services.AddSingleton<IBotReplyQueue, NoOpBotReplyQueue>();
+        }
 
         var demoResetSection = configuration.GetSection(DemoResetOptions.SectionName);
         if (configuration.GetValue<bool>("Demo:Enabled") &&

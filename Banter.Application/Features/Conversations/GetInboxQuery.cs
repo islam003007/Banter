@@ -2,6 +2,7 @@
 using Banter.Application.Abstractions.Auth;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Messaging;
+using Banter.Application.Bots;
 using Banter.Application.Constants;
 using Banter.Application.Errors;
 using Banter.Application.Extensions;
@@ -9,6 +10,7 @@ using Banter.Application.Features.Common;
 using Banter.SharedKernel;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Banter.Application.Features.Conversations;
 
@@ -41,12 +43,17 @@ internal class GetInboxQueryValidator : AbstractValidator<GetInboxQuery>
     }
 }
 
-internal class GetInboxHandler(IAppDbContext _dbContext, IUserContext _userContext, IPresenceService _presenceService)
+internal class GetInboxHandler(
+    IAppDbContext _dbContext,
+    IUserContext _userContext,
+    IPresenceService _presenceService,
+    IOptions<BotOptions>? botOptions = null)
     : IQueryHandler<GetInboxQuery, GetInboxResponse>
 {
     public async Task<Result<GetInboxResponse>> Handle(GetInboxQuery request, CancellationToken cancellationToken)
     {
         Guid userId = _userContext.UserId;
+        var includeBots = botOptions?.Value.Enabled ?? true;
 
         PageCursor? decodedCursor = null;
 
@@ -71,6 +78,7 @@ internal class GetInboxHandler(IAppDbContext _dbContext, IUserContext _userConte
                 on p.LastSeenMessageId equals sm.Id into seenMessages
             from sm in seenMessages.DefaultIfEmpty()
             where p.UserId == userId
+            where includeBots || !c.Participants.Any(cp => cp.User.IsBot)
             let activityAt = lm != null ? lm.CreatedAt : c.CreatedAt
             let activityId = lm != null ? lm.Id : c.Id
             where decodedCursor == null

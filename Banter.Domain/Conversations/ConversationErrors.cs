@@ -29,4 +29,7 @@ public static class ConversationErrors
 
     public static readonly Error TooManyParticipants =
         Error.Problem("Conversations.TooManyParticipants", "The conversation has too many participants.");
+
+    public static readonly Error BotsDisabled =
+        Error.Problem("Conversations.BotsDisabled", "Bot conversations are disabled.");
 }

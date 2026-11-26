@@ -1,5 +1,7 @@
 using Banter.Application.Features.Users;
+using Banter.Application.Bots;
 using Banter.UnitTests.TestSupport;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Banter.UnitTests.Users;
@@ -92,5 +94,28 @@ public class SearchUsersQueryTests
 
         Assert.True(result.IsSuccess);
         Assert.False(Assert.Single(result.Value.Users).IsBot);
+    }
+
+    [Fact]
+    public async Task Handle_HidesBotAccountsWhenBotsAreDisabled()
+    {
+        await using var database = TestDatabase.Create();
+
+        database.AddUser("ahmed@example.com", "Ahmed");
+        database.AddBot("ada@bots.local", "Ada");
+
+        await database.SaveAsync();
+
+        var handler = new SearchUsersHandler(
+            database.Context,
+            new FakePresenceService(),
+            Options.Create(new BotOptions { Enabled = false }));
+
+        var result = await handler.Handle(
+            new SearchUsersQuery("Ada", null, 10),
+            CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        Assert.Empty(result.Value.Users);
     }
 }

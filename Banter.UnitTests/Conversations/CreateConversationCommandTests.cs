@@ -1,8 +1,10 @@
 using Banter.Application.Features.Conversations;
+using Banter.Application.Bots;
 using Banter.Domain.Constants;
 using Banter.Domain.Conversations;
 using Banter.UnitTests.TestSupport;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Banter.UnitTests.Conversations;
@@ -249,6 +251,30 @@ public class CreateConversationCommandTests
 
         Assert.False(result.IsSuccess);
         Assert.Equal(ConversationErrors.TooManyParticipants.Code, result.Error.Code);
+        Assert.Empty(database.Context.Conversations);
+    }
+
+    [Fact]
+    public async Task Handle_RejectsBotDmsWhenBotsAreDisabled()
+    {
+        await using var database = TestDatabase.Create();
+
+        var ahmed = database.AddUser("ahmed@example.com", "Ahmed");
+        var ada = database.AddBot("ada@bots.local", "Ada");
+
+        await database.SaveAsync();
+
+        var handler = new CreateConversationCommandHandler(
+            database.Context,
+            new FakeUserContext(ahmed.Id),
+            Options.Create(new BotOptions { Enabled = false }));
+
+        var result = await handler.Handle(
+            new CreateConversationCommand([ada.Id]),
+            CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(ConversationErrors.BotsDisabled.Code, result.Error.Code);
         Assert.Empty(database.Context.Conversations);
     }
 

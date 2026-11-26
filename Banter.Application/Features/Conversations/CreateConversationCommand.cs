@@ -1,11 +1,13 @@
 ﻿using Banter.Application.Abstractions.Auth;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Messaging;
+using Banter.Application.Bots;
 using Banter.Domain.Constants;
 using Banter.Domain.Conversations;
 using Banter.SharedKernel;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Banter.Application.Features.Conversations;
 
@@ -34,12 +36,16 @@ internal class CreateConversationCommandValidator : AbstractValidator<CreateConv
     }
 }
 
-internal class CreateConversationCommandHandler(IAppDbContext _dbContext, IUserContext _userContext)
+internal class CreateConversationCommandHandler(
+    IAppDbContext _dbContext,
+    IUserContext _userContext,
+    IOptions<BotOptions>? botOptions = null)
     : ICommandHandler<CreateConversationCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(CreateConversationCommand request, CancellationToken cancellationToken)
     {
         Guid currentUserId = _userContext.UserId;
+        var includeBots = botOptions?.Value.Enabled ?? true;
 
         var requestedParticipantIds = request.ParticipantIds?.Distinct().ToList() ?? [];
 
@@ -56,15 +62,20 @@ internal class CreateConversationCommandHandler(IAppDbContext _dbContext, IUserC
 
         // Validate the whole participant set before touching the FK graph. Missing users used to
         // surface as an opaque 500 from the ConversationParticipants foreign key.
-        var existingParticipantIds = await _dbContext.Users
+        var existingParticipants = await _dbContext.Users
             .Where(user => requestedParticipantIds.Contains(user.Id))
-            .Select(user => user.Id)
+            .Select(user => new { user.Id, user.IsBot })
             .ToListAsync(cancellationToken);
+
+        var existingParticipantIds = existingParticipants.Select(user => user.Id).ToList();
 
         var missingParticipantIds = requestedParticipantIds.Except(existingParticipantIds).ToList();
 
         if (missingParticipantIds.Count > 0)
             return Result.Failure<Guid>(ConversationErrors.ParticipantsNotFound(missingParticipantIds));
+
+        if (!includeBots && existingParticipants.Any(user => user.IsBot))
+            return Result.Failure<Guid>(ConversationErrors.BotsDisabled);
 
         Conversation conversation;
 

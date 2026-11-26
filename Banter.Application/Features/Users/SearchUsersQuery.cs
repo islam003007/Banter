@@ -1,6 +1,7 @@
 ﻿using Banter.Application.Abstractions;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Messaging;
+using Banter.Application.Bots;
 using Banter.Application.Constants;
 using Banter.Application.Errors;
 using Banter.Application.Extensions;
@@ -8,6 +9,7 @@ using Banter.Application.Features.Common;
 using Banter.SharedKernel;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Banter.Application.Features.Users;
 
@@ -37,7 +39,10 @@ public record SearchUsersResponse(IReadOnlyList<SearchUsersResponse.UserResponse
 }
 
 
-internal class SearchUsersHandler(IAppDbContext _dbContext, IPresenceService presenceService)
+internal class SearchUsersHandler(
+    IAppDbContext _dbContext,
+    IPresenceService presenceService,
+    IOptions<BotOptions>? botOptions = null)
     : IQueryHandler<SearchUsersQuery, SearchUsersResponse>
 {
     public async Task<Result<SearchUsersResponse>> Handle(SearchUsersQuery request, CancellationToken cancellationToken)
@@ -60,8 +65,16 @@ internal class SearchUsersHandler(IAppDbContext _dbContext, IPresenceService pre
         // it to `lower(column) LIKE lower(pattern)`; the PostgreSQL integration tests assert the
         // real case-insensitive behaviour.
         var searchTerm = request.SearchTerm.Trim().ToLowerInvariant();
+        var includeBots = botOptions?.Value.Enabled ?? true;
 
-        var users = await _dbContext.Users
+        var usersQuery = _dbContext.Users.AsQueryable();
+
+        if (!includeBots)
+        {
+            usersQuery = usersQuery.Where(u => !u.IsBot);
+        }
+
+        var users = await usersQuery
             .Where(u => u.DisplayName.ToLower().Contains(searchTerm)
                 || (u.Email != null && u.Email.ToLower().Contains(searchTerm)))
             .Where(u => decodedCursor == null

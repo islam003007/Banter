@@ -25,7 +25,10 @@ public static class DependencyInjection
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
-        services.AddScoped<IBotReplyProcessor, BotReplyProcessor>();
+        if (configuration.GetValue<bool>($"{BotOptions.SectionName}:Enabled"))
+        {
+            services.AddScoped<IBotReplyProcessor, BotReplyProcessor>();
+        }
 
         return services;
     }

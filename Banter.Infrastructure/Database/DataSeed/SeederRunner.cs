@@ -1,8 +1,10 @@
 ﻿using Banter.Domain.Conversations;
 using Banter.Domain.Messages;
+using Banter.Application.Bots;
 using Banter.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace Banter.Infrastructure.Database.DataSeed;
 
@@ -52,12 +54,27 @@ public static class SeederRunner
 
     public async static Task SeedDevelopment(IServiceProvider serviceProvider)
     {
+        var botsEnabled = serviceProvider
+            .GetRequiredService<IOptions<BotOptions>>()
+            .Value
+            .Enabled;
+
         await IdentityDataSeeder.SeedUsers(serviceProvider);
-        await IdentityDataSeeder.SeedBots(serviceProvider);
+
+        if (botsEnabled)
+        {
+            await IdentityDataSeeder.SeedBots(serviceProvider);
+        }
+
         await DataSeeder.SeedAsync<Conversation>(serviceProvider, "Conversations.json");
         await DataSeeder.SeedAsync<Message>(serviceProvider, "Messages.json");
         await DataSeeder.SeedAsync<ConversationParticipant>(serviceProvider, "ConversationParticipants.json");
-        await BotDataSeeder.SeedAsync(serviceProvider);
+
+        if (botsEnabled)
+        {
+            await BotDataSeeder.SeedAsync(serviceProvider);
+        }
+
         await GroupDataSeeder.SeedAsync(serviceProvider);
 
         await using (var scope = serviceProvider.CreateAsyncScope())

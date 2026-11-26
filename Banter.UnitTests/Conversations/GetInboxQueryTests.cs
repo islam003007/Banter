@@ -1,7 +1,9 @@
 ﻿using Banter.Application.Features.Conversations;
+using Banter.Application.Bots;
 using Banter.Domain.Conversations;
 using Banter.Domain.Messages;
 using Banter.UnitTests.TestSupport;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Banter.UnitTests.Conversations;
@@ -214,5 +216,36 @@ public class GetInboxQueryTests
 
         var afterNewMessage = await inboxHandler.Handle(new GetInboxQuery(null, 20), CancellationToken.None);
         Assert.Equal(1, afterNewMessage.Value.Conversations.Single().UnreadCount);
+    }
+
+    [Fact]
+    public async Task Handle_HidesBotDmsWhenBotsAreDisabled()
+    {
+        await using var database = TestDatabase.Create();
+
+        var ahmed = database.AddUser("ahmed@example.com", "Ahmed");
+        var sara = database.AddUser("sara@example.com", "Sara");
+        var ada = database.AddBot("ada@bots.local", "Ada");
+
+        await database.SaveAsync();
+
+        var humanConversation = Conversation.CreateDM(ahmed.Id, sara.Id);
+        var botConversation = Conversation.CreateDM(ahmed.Id, ada.Id);
+
+        database.Context.Conversations.AddRange(humanConversation, botConversation);
+        await database.SaveAsync();
+
+        var handler = new GetInboxHandler(
+            database.Context,
+            new FakeUserContext(ahmed.Id),
+            new FakePresenceService(),
+            Options.Create(new BotOptions { Enabled = false }));
+
+        var result = await handler.Handle(new GetInboxQuery(null, 20), CancellationToken.None);
+
+        Assert.True(result.IsSuccess);
+        var conversation = Assert.Single(result.Value.Conversations);
+        Assert.Equal(humanConversation.Id, conversation.ConversationId);
+        Assert.False(conversation.IsBot);
     }
 }

@@ -168,9 +168,10 @@ cross-origin requests rather than allowing everything.
 
 ## AI bot chats
 
-Three seeded AI contacts — **Ada**, **Milo** and **Nova** — appear in user search with an AI badge.
-Start a direct conversation with one and send a message. A hosted background worker emits a typing
-event, generates a persona-aware reply (offline demo brain by default), persists it as the bot and
+AI bot chats are disabled by default (`Bots:Enabled=false`). When enabled, three seeded AI
+contacts — **Ada**, **Milo** and **Nova** — appear in user search with an AI badge. Start a direct
+conversation with one and send a message. A hosted background worker emits a typing event,
+generates a persona-aware reply (offline demo brain by default), persists it as the bot and
 delivers it over SignalR. Bots only reply in one-to-one chats and never to other bots.
 
 Bots have `IsBot=true`, no passwords, and are excluded from standard/demo login. The migration
