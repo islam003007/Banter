@@ -1,6 +1,7 @@
 ﻿using Banter.Application.Abstractions.Auth;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Messaging;
+using Banter.Application.Bots;
 using Banter.Application.Constants;
 using Banter.Application.Errors;
 using Banter.Application.Extensions;
@@ -9,6 +10,7 @@ using Banter.Domain.Conversations;
 using Banter.SharedKernel;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Banter.Application.Features.Messages;
 
@@ -33,7 +35,10 @@ internal class GetMessagesQueryValidator : AbstractValidator<GetMessagesQuery>
     }
 }
 
-internal class GetMessagesQueryHandler(IAppDbContext _dbContext, IUserContext _userContext)
+internal class GetMessagesQueryHandler(
+    IAppDbContext _dbContext,
+    IUserContext _userContext,
+    IOptions<BotOptions>? botOptions = null)
     : IQueryHandler<GetMessagesQuery, GetMessagesResponse>
 {
     public async Task<Result<GetMessagesResponse>> Handle(GetMessagesQuery request, CancellationToken cancellationToken)
@@ -52,6 +57,16 @@ internal class GetMessagesQueryHandler(IAppDbContext _dbContext, IUserContext _u
 
         if (participant is null)
             return Result.Failure<GetMessagesResponse>(ConversationErrors.AccessDenied(request.ConversationId));
+
+        var includeBots = botOptions?.Value.Enabled ?? true;
+
+        if (!includeBots &&
+            await _dbContext.ConversationParticipants.AnyAsync(
+                p => p.ConversationId == request.ConversationId && p.User.IsBot,
+                cancellationToken))
+        {
+            return Result.Failure<GetMessagesResponse>(ConversationErrors.NotFound(request.ConversationId));
+        }
 
         PageCursor? decodedCursor = null;
 

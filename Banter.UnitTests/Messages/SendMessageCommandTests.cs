@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
-﻿using Banter.Application.Features.Messages;
+using Banter.Application.Bots;
+using Banter.Application.Features.Messages;
 using Banter.Domain.Conversations;
 using Banter.UnitTests.TestSupport;
+using Microsoft.Extensions.Options;
 using Xunit;
 
 namespace Banter.UnitTests.Messages;
@@ -49,6 +51,40 @@ public class SendMessageCommandTests
         Assert.False(notification.IsBot);
         Assert.Equal(new[] { sara.Id.ToString() }, captured.UserIds);
         Assert.Empty(queue.Requests);
+    }
+
+    [Fact]
+    public async Task Handle_BotConversation_IsRejectedWhenBotsAreDisabled()
+    {
+        await using var database = TestDatabase.Create();
+
+        var ahmed = database.AddUser("ahmed@example.com", "Ahmed");
+        var ada = database.AddBot("ada@bots.local", "Ada");
+
+        await database.SaveAsync();
+
+        var conversation = Conversation.CreateDM(ahmed.Id, ada.Id);
+        database.Context.Conversations.Add(conversation);
+
+        await database.SaveAsync();
+
+        var queue = new CapturingBotReplyQueue();
+
+        var handler = new SendMessageCommandHandler(
+            database.Context,
+            new FakeUserContext(ahmed.Id),
+            new FakeSignalRNotifier(),
+            queue,
+            Options.Create(new BotOptions { Enabled = false }));
+
+        var result = await handler.Handle(
+            new SendMessageCommand(conversation.Id, "Ada, are you there?"),
+            CancellationToken.None);
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal("Conversations.NotFound", result.Error.Code);
+        Assert.Empty(queue.Requests);
+        Assert.False(await database.Context.Messages.AnyAsync(message => message.ConversationId == conversation.Id));
     }
 
     [Fact]

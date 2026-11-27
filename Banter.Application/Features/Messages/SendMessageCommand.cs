@@ -4,12 +4,14 @@ using Banter.Application.Abstractions.Bots;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Messaging;
 using Banter.Application.Abstractions.Realtime;
+using Banter.Application.Bots;
 using Banter.Domain.Constants;
 using Banter.Domain.Conversations;
 using Banter.Domain.Messages;
 using Banter.SharedKernel;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Banter.Application.Features.Messages;
 
@@ -34,7 +36,8 @@ internal class SendMessageCommandHandler(
     IAppDbContext _dbContext,
     IUserContext _userContext,
     ISignalRNotifier _notificationService,
-    IBotReplyQueue _botReplyQueue)
+    IBotReplyQueue _botReplyQueue,
+    IOptions<BotOptions>? botOptions = null)
     : ICommandHandler<SendMessageCommand, Guid>
 {
     public async Task<Result<Guid>> Handle(SendMessageCommand request, CancellationToken cancellationToken)
@@ -47,6 +50,16 @@ internal class SendMessageCommandHandler(
         if (!isParticipant)
         {
             return Result<Guid>.Failure(ConversationErrors.AccessDenied(request.ConversationId));
+        }
+
+        var includeBots = botOptions?.Value.Enabled ?? true;
+
+        if (!includeBots &&
+            await _dbContext.ConversationParticipants.AnyAsync(
+                p => p.ConversationId == request.ConversationId && p.User.IsBot,
+                cancellationToken))
+        {
+            return Result<Guid>.Failure(ConversationErrors.NotFound(request.ConversationId));
         }
 
         var message = new Message(request.ConversationId, userId, request.Content);

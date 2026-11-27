@@ -2,10 +2,12 @@
 using Banter.Application.Abstractions.Auth;
 using Banter.Application.Abstractions.Data;
 using Banter.Application.Abstractions.Messaging;
+using Banter.Application.Bots;
 using Banter.Domain.Conversations;
 using Banter.SharedKernel;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace Banter.Application.Features.Conversations;
 
@@ -32,7 +34,8 @@ internal class GetConversationQueryValidator : AbstractValidator<GetConversation
 internal class GetConversationQueryHandler(
     IAppDbContext _dbContext,
     IUserContext _userContext,
-    IPresenceService _presenceService)
+    IPresenceService _presenceService,
+    IOptions<BotOptions>? botOptions = null)
     : IQueryHandler<GetConversationQuery, GetConversationResponse>
 {
     public async Task<Result<GetConversationResponse>> Handle(GetConversationQuery request, CancellationToken cancellationToken)
@@ -57,6 +60,16 @@ internal class GetConversationQueryHandler(
 
         if (!isParticipant)
             return Result.Failure<GetConversationResponse>(ConversationErrors.AccessDenied(request.ConversationId));
+
+        var includeBots = botOptions?.Value.Enabled ?? true;
+
+        if (!includeBots &&
+            await _dbContext.ConversationParticipants.AnyAsync(
+                p => p.ConversationId == request.ConversationId && p.User.IsBot,
+                cancellationToken))
+        {
+            return Result.Failure<GetConversationResponse>(ConversationErrors.NotFound(request.ConversationId));
+        }
 
         var participants = await (
             from p in _dbContext.ConversationParticipants
